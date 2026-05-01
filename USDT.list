@@ -1,0 +1,63 @@
+# --- 主流交易所 (Exchanges) ---
+# 幣安 (Binance)
+DOMAIN-KEYWORD,binance
+DOMAIN-SUFFIX,binance.com
+DOMAIN-SUFFIX,binance.me
+DOMAIN-SUFFIX,binance.charity
+DOMAIN-SUFFIX,binance.cloud
+DOMAIN-SUFFIX,binance.co
+DOMAIN-SUFFIX,binance.info
+DOMAIN-SUFFIX,bnappzh.co
+DOMAIN-SUFFIX,bnbstatic.com
+DOMAIN-SUFFIX,bntrace.com
+
+# OKX (歐易)
+DOMAIN-KEYWORD,okx
+DOMAIN-SUFFIX,okx.com
+DOMAIN-SUFFIX,okx.org
+DOMAIN-SUFFIX,okx-dns.com
+DOMAIN-SUFFIX,okx-dns1.com
+
+# Bybit
+DOMAIN-KEYWORD,bybit
+DOMAIN-SUFFIX,bybit.com
+DOMAIN-SUFFIX,bybit.io
+DOMAIN-SUFFIX,bytick.com
+
+# Gate.io (芝麻開門)
+DOMAIN-KEYWORD,gateio
+DOMAIN-SUFFIX,gate.io
+DOMAIN-SUFFIX,gateio.services
+DOMAIN-SUFFIX,gateio.live
+
+# Huobi / HTX (火幣)
+DOMAIN-KEYWORD,huobi
+DOMAIN-SUFFIX,htx.com
+DOMAIN-SUFFIX,huobi.com
+DOMAIN-SUFFIX,huobi.br.com
+DOMAIN-SUFFIX,huobiasia.vip
+
+# --- 熱錢包與 Web3 服務 (Wallets & Web3) ---
+# SafePal
+DOMAIN-KEYWORD,safepal
+DOMAIN-SUFFIX,safepal.com
+DOMAIN-SUFFIX,safepal.io
+DOMAIN-SUFFIX,sfp.is
+
+# MetaMask (小狐狸)
+DOMAIN-KEYWORD,metamask
+DOMAIN-SUFFIX,metamask.io
+
+# Trust Wallet
+DOMAIN-KEYWORD,trustwallet
+DOMAIN-SUFFIX,trustwallet.com
+
+# WalletConnect
+DOMAIN-SUFFIX,walletconnect.org
+DOMAIN-SUFFIX,walletconnect.com
+
+# --- 數據行情與資訊 (Data & Analytics) ---
+# CoinMarketCap & CoinGecko
+DOMAIN-SUFFIX,coinmarketcap.com
+DOMAIN-SUFFIX,coingecko.com
+DOMAIN-SUFFIX,tradingview.com
