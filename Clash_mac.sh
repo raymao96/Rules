@@ -39,30 +39,30 @@ wget https://raw.githubusercontent.com/raymao996/Rules/main/Clash_TW.yaml
 wget https://raw.githubusercontent.com/raymao996/Rules/main/Clash_Final.yaml
 
 # 去除註釋及空白行並加上分流名稱
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,DIRECT/g' Domestic.yaml > Domestic1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,DIRECT/g' LAN.yaml > LAN1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,DIRECT/g' WeChat.yaml > WeChat1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,DIRECT/g' GameDownloadCN.yaml > GameDownloadCN1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🔰 境外流量/g' Proxy.yaml > Proxy1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🔰 境外流量/g' Speedtest.yaml > Speedtest1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🔰 境外流量/g' DMM.yaml > DMM1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🔰 境外流量/g' AI\ Suite.yaml > AI_Suite.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🔰 境外流量/g' Game.yaml > Game1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🔰 境外流量/g' MOMOShop.yaml > MOMOShop1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🔰 境外流量/g' PChomeTW.yaml > PChome.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🔰 境外流量/g' Shopee.yaml > Shopee1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🔰 境外流量/g' Bahamut.yaml > Bahamut1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🔰 境外流量/g' KKBOX.yaml > KKBOX1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🔰 境外流量/g' KKTV.yaml > KKTV1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🔰 境外流量/g' Line\ TV.yaml > LineTV.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,Ⓜ️ Microsoft/g' Microsoft.yaml > Microsoft1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🍎 Apple/g' Apple.yaml > Apple1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🍎 Apple/g' Apple\ Music.yaml > Apple_Music.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🎬 YouTube/g' YouTube.yaml > YouTube1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🎬 YouTube/g' YouTube\ Music.yaml > YouTube_Music.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🎬 Disney/g' Disney\ Plus.yaml > Disney.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🎬 Netflix/g' Netflix.yaml > Netflix1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e 's/$/,🎬 BiliBili/g' Bilibili.yaml > Bilibili1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' Domestic.yaml > Domestic1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' LAN.yaml > LAN1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' WeChat.yaml > WeChat1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' GameDownloadCN.yaml > GameDownloadCN1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Proxy.yaml > Proxy1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Speedtest.yaml > Speedtest1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' DMM.yaml > DMM1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' AI\ Suite.yaml > AI_Suite.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Game.yaml > Game1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' MOMOShop.yaml > MOMOShop1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' PChomeTW.yaml > PChome.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Shopee.yaml > Shopee1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Bahamut.yaml > Bahamut1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' KKBOX.yaml > KKBOX1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' KKTV.yaml > KKTV1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Line\ TV.yaml > LineTV.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,Ⓜ️ Microsoft/g' Microsoft.yaml > Microsoft1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🍎 Apple/g' Apple.yaml > Apple1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🍎 Apple/g' Apple\ Music.yaml > Apple_Music.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🎬 YouTube/g' YouTube.yaml > YouTube1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🎬 YouTube/g' YouTube\ Music.yaml > YouTube_Music.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🎬 Disney/g' Disney\ Plus.yaml > Disney.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🎬 Netflix/g' Netflix.yaml > Netflix1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🎬 BiliBili/g' Bilibili.yaml > Bilibili1.yaml
 
 # 重新加上註釋（在 MacOS 上執行）
 sed -i '' -e '1i \
