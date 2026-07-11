@@ -44,7 +44,7 @@ proxies:
 proxy-groups:
   - { name: "🔰 境外流量", type: select, proxies: ["♻️ Auto"] }
   - { name: "🇨🇳 境内流量", type: select, proxies: ["DIRECT",/^(?=.*aaa)(?=.*bbb).*$/] }
-  - { name: "♻️ Auto", type: fallback, proxies: [/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/], url: "http://www.gstatic.com/generate_204", interval: 7200 }
+  - { name: "♻️ Auto", type: fallback, proxies: [/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/], url: "http://www.gstatic.com/generate_204", interval: 180 }
   - { name: "Ⓜ️ Microsoft", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
   - { name: "🍎 Apple", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
   - { name: "🎬 YouTube", type: select, proxies: ["♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }

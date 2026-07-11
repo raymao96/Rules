@@ -1,4 +1,4 @@
-# 更新日期： 2026-05-17 19:35
+# 更新日期： 2026-07-10 01:31
 port: 1087
 socks-port: 1080
 redir-port: 7892
@@ -45,7 +45,7 @@ proxies:
 proxy-groups:
   - { name: "🔰 境外流量", type: select, proxies: ["♻️ Auto"] }
   - { name: "🇨🇳 境内流量", type: select, proxies: ["DIRECT",/^(?=.*aaa)(?=.*bbb).*$/] }
-  - { name: "♻️ Auto", type: fallback, proxies: [/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/], url: "http://www.gstatic.com/generate_204", interval: 7200 }
+  - { name: "♻️ Auto", type: fallback, proxies: [/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/], url: "http://www.gstatic.com/generate_204", interval: 180 }
   - { name: "Ⓜ️ Microsoft", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
   - { name: "🍎 Apple", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
   - { name: "🎬 YouTube", type: select, proxies: ["♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
@@ -54,14 +54,8 @@ proxy-groups:
   - { name: "🎬 BiliBili", type: select, proxies: ["🇨🇳 境内流量",/^(.*)(TW|HK)+(.*)$/] }
 
 rules:
-
-  # Google Play
-
-  - DOMAIN-SUFFIX,services.googleapis.cn,🔰 境外流量
-  - DOMAIN-SUFFIX,xn--ngstr-lra8j.com,DIRECT
-  - DOMAIN-SUFFIX,clientservices.googleapis.com,🔰 境外流量
-  - DOMAIN-KEYWORD,google,🔰 境外流量
-
+  # VPS
+  - DOMAIN-SUFFIX,my.yecaoyun.com,DIRECT
 
   # REJECT UDP 53
   - IP-CIDR,8.8.8.8/32,🔰 境外流量
@@ -69,6 +63,13 @@ rules:
   - IP-CIDR,1.1.1.1/32,🔰 境外流量
   - IP-CIDR,1.0.0.1/32,🔰 境外流量
 
+  # Google Play
+
+  - DOMAIN-SUFFIX,services.googleapis.cn,🎬 YouTube
+  - DOMAIN-SUFFIX,xn--ngstr-lra8j.com,DIRECT
+  - DOMAIN-SUFFIX,clientservices.googleapis.com,🎬 YouTube
+  - DOMAIN-SUFFIX,ggpht.com,🎬 YouTube
+  - DOMAIN-KEYWORD,google,🎬 YouTube
 
   # Wechat.com
 
@@ -152,7 +153,6 @@ rules:
   - DOMAIN-SUFFIX,resstatic.servicewechat.com,DIRECT
   - IP-CIDR,101.32.0.0/16,DIRECT
   - IP-CIDR,129.226.0.0/16,DIRECT
-
 
   # Customized
 
@@ -1236,15 +1236,34 @@ rules:
   - DOMAIN-SUFFIX,augmentcode.com,🔰 境外流量
   - DOMAIN-SUFFIX,ai.com,🔰 境外流量
   - DOMAIN-SUFFIX,chatgpt.com,🔰 境外流量
+  - DOMAIN-SUFFIX,ct.sendgrid.net,🔰 境外流量
+  - DOMAIN-SUFFIX,featureassets.org,🔰 境外流量
+  - DOMAIN-SUFFIX,featuregates.org,🔰 境外流量
+  - DOMAIN-SUFFIX,intercom.io,🔰 境外流量
+  - DOMAIN-SUFFIX,intercomcdn.com,🔰 境外流量
+  - DOMAIN-SUFFIX,oaistatic.com,🔰 境外流量
+  - DOMAIN-SUFFIX,oaiusercontent.com,🔰 境外流量
   - DOMAIN-SUFFIX,openai.com,🔰 境外流量
+  - DOMAIN-SUFFIX,prodregistryv2.org,🔰 境外流量
+  - DOMAIN-SUFFIX,statsig.com,🔰 境外流量
+  - DOMAIN-SUFFIX,statsigapi.net,🔰 境外流量
+  - DOMAIN,cdn.openaimerge.com,🔰 境外流量
+  - DOMAIN,cdn.workos.com,🔰 境外流量
+  - DOMAIN,challenges.cloudflare.com,🔰 境外流量
   - DOMAIN,chat.openai.com.cdn.cloudflare.net,🔰 境外流量
+  - DOMAIN,forwarder.workos.com,🔰 境外流量
+  - DOMAIN,humb.apple.com,🔰 境外流量
+  - DOMAIN,images.workoscdn.com,🔰 境外流量
+  - DOMAIN,js.stripe.com,🔰 境外流量
+  - DOMAIN,o207216.ingest.sentry.io,🔰 境外流量
+  - DOMAIN,o33249.ingest.sentry.io,🔰 境外流量
   - DOMAIN,openaiapi-site.azureedge.net,🔰 境外流量
   - DOMAIN,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net,🔰 境外流量
   - DOMAIN,openaicomproductionae4b.blob.core.windows.net,🔰 境外流量
   - DOMAIN,production-openaicom-storage.azureedge.net,🔰 境外流量
-  - DOMAIN-SUFFIX,cdn.oaistatic.com,🔰 境外流量
-  - DOMAIN-SUFFIX,oaiusercontent.com,🔰 境外流量
-  - DOMAIN,o33249.ingest.sentry.io,🔰 境外流量
+  - DOMAIN,rum.browser-intake-datadoghq.com,🔰 境外流量
+  - DOMAIN,setup.workos.com,🔰 境外流量
+  - DOMAIN,workos.imgix.net,🔰 境外流量
   - DOMAIN-SUFFIX,cerebras.ai,🔰 境外流量
   - DOMAIN-SUFFIX,chorus.sh,🔰 境外流量
   - DOMAIN-SUFFIX,anthropic.com,🔰 境外流量
@@ -1299,7 +1318,6 @@ rules:
   - DOMAIN-SUFFIX,gspe1-ssl.ls.apple.com,🔰 境外流量
   - DOMAIN-SUFFIX,smoot.apple.com,🔰 境外流量
   - DOMAIN-SUFFIX,sora.com,🔰 境外流量
-  - DOMAIN,sora-cdn.oaistatic.com,🔰 境外流量
   - DOMAIN-SUFFIX,trae.ai,🔰 境外流量
   - DOMAIN-SUFFIX,traeapi.us,🔰 境外流量
   - DOMAIN-SUFFIX,windsurf.com,🔰 境外流量
@@ -1729,13 +1747,16 @@ rules:
   - DOMAIN-SUFFIX,lpl.com.cn,🔰 境外流量
   - DOMAIN-SUFFIX,molesports.com,🔰 境外流量
   - DOMAIN-SUFFIX,playvalorant.com,🔰 境外流量
+  - DOMAIN-SUFFIX,pvp.net,🔰 境外流量
   - DOMAIN-SUFFIX,pvp.tv,🔰 境外流量
   - DOMAIN-SUFFIX,rgpub.io,🔰 境外流量
   - DOMAIN-SUFFIX,riot-games.com,🔰 境外流量
   - DOMAIN-SUFFIX,riot.com,🔰 境外流量
   - DOMAIN-SUFFIX,riot.net,🔰 境外流量
+  - DOMAIN-SUFFIX,riotcdn.net,🔰 境外流量
   - DOMAIN-SUFFIX,riotforgegames.com,🔰 境外流量
   - DOMAIN-SUFFIX,riotgames.co.kr,🔰 境外流量
+  - DOMAIN-SUFFIX,riotgames.com,🔰 境外流量
   - DOMAIN-SUFFIX,riotgames.info,🔰 境外流量
   - DOMAIN-SUFFIX,riotgames.jp,🔰 境外流量
   - DOMAIN-SUFFIX,riotgames.net,🔰 境外流量
@@ -1812,9 +1833,6 @@ rules:
   - DOMAIN-SUFFIX,ubisoft-uplay-savegames.s3.amazonaws.com,🔰 境外流量
   - DOMAIN-SUFFIX,ubisoft.com,🔰 境外流量
   - DOMAIN-SUFFIX,uplay.com,🔰 境外流量
-  - DOMAIN-SUFFIX,pvp.net,🔰 境外流量
-  - DOMAIN-SUFFIX,riotcdn.net,🔰 境外流量
-  - DOMAIN-SUFFIX,riotgames.com,🔰 境外流量
   - DOMAIN-SUFFIX,beth.games,🔰 境外流量
   - DOMAIN-SUFFIX,bethesda.net,🔰 境外流量
   - DOMAIN-SUFFIX,bethesdagamestudios.com,🔰 境外流量
@@ -1857,12 +1875,14 @@ rules:
   - DOMAIN-KEYWORD,steambroadcast,🔰 境外流量
   - DOMAIN-KEYWORD,steamstore,🔰 境外流量
   - DOMAIN-KEYWORD,steamuserimages,🔰 境外流量
+  - IP-CIDR,103.4.115.248/32,🔰 境外流量
   - IP-CIDR,182.162.135.1/32,🔰 境外流量
+  - IP-CIDR,185.60.112.157/32,🔰 境外流量
+  - IP-CIDR,185.60.112.158/32,🔰 境外流量
   - IP-CIDR,210.242.235.6/32,🔰 境外流量
   - IP-CIDR,24.105.30.129/32,🔰 境外流量
   - IP-CIDR,54.94.196.47/32,🔰 境外流量
   - IP-CIDR,182.162.132.1/32,🔰 境外流量
-  - IP-CIDR,103.4.114.233/32,🔰 境外流量
   - IP-CIDR,182.162.116.1/32,🔰 境外流量
   - IP-CIDR,202.9.67.59/32,🔰 境外流量
   - IP-CIDR,203.69.111.4/32,🔰 境外流量
@@ -1871,8 +1891,11 @@ rules:
   - IP-CIDR,203.66.81.98/32,🔰 境外流量
   - IP-CIDR,211.234.110.1/32,🔰 境外流量
   - IP-CIDR,54.207.107.12/32,🔰 境外流量
+  - IP-CIDR,103.4.114.233/32,🔰 境外流量
+  - IP-CIDR,185.60.114.159/32,🔰 境外流量
   - IP-CIDR,202.9.67.254/32,🔰 境外流量
   - IP-CIDR,222.231.22.1/32,🔰 境外流量
+  - IP-CIDR,24.105.62.129/32,🔰 境外流量
   - IP-CIDR,13.210.25.233/32,🔰 境外流量
   - IP-CIDR,13.212.170.102/32,🔰 境外流量
   - IP-CIDR,13.212.171.212/32,🔰 境外流量
@@ -1895,14 +1918,17 @@ rules:
   - IP-CIDR,52.50.131.212/32,🔰 境外流量
   - IP-CIDR,54.207.168.84/32,🔰 境外流量
   - IP-CIDR,54.248.64.192/32,🔰 境外流量
-  - IP-CIDR,103.4.115.248/32,🔰 境外流量
   - IP-CIDR,137.221.105.2/32,🔰 境外流量
-  - IP-CIDR,185.60.112.157/32,🔰 境外流量
-  - IP-CIDR,185.60.112.158/32,🔰 境外流量
-  - IP-CIDR,185.60.114.159/32,🔰 境外流量
   - IP-CIDR,210.71.148.11/32,🔰 境外流量
   - IP-CIDR,211.115.104.1/32,🔰 境外流量
-  - IP-CIDR,24.105.62.129/32,🔰 境外流量
+  - DOMAIN-SUFFIX,redd.it,🔰 境外流量
+  - DOMAIN-SUFFIX,reddit.com,🔰 境外流量
+  - DOMAIN-SUFFIX,redditmail.com,🔰 境外流量
+  - DOMAIN-SUFFIX,redditmedia.com,🔰 境外流量
+  - DOMAIN-SUFFIX,redditstatic.com,🔰 境外流量
+  - DOMAIN-SUFFIX,reddituploads.com,🔰 境外流量
+  - DOMAIN-SUFFIX,reddituploads.com.cdn-cf.behance.net,🔰 境外流量
+  - DOMAIN-SUFFIX,reddituploads.com.cdn-cf.dropbox.com,🔰 境外流量
   - DOMAIN-SUFFIX,momo.dm,🔰 境外流量
   - DOMAIN-SUFFIX,momo5188.com,🔰 境外流量
   - DOMAIN-SUFFIX,momomall.com.tw,🔰 境外流量

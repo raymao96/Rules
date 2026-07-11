@@ -20,6 +20,7 @@ wget https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Speedte
 wget https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Media/DMM.yaml
 wget https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/AI%20Suite.yaml
 wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Game/Game.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Reddit/Reddit.yaml
 wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/MOMOShop/MOMOShop.yaml
 wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/PChomeTW/PChomeTW.yaml
 wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Shopee/Shopee.yaml
@@ -35,8 +36,8 @@ wget https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Media/B
 wget https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Media/KKBOX.yaml
 wget https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Media/KKTV.yaml
 wget https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Media/Line%20TV.yaml
-wget https://raw.githubusercontent.com/raymao996/Rules/main/Clash_TW.yaml
-wget https://raw.githubusercontent.com/raymao996/Rules/main/Clash_Final.yaml
+wget https://raw.githubusercontent.com/raymao96/Rules/main/Clash_TW.yaml
+wget https://raw.githubusercontent.com/raymao96/Rules/main/Clash_Final.yaml
 
 # 去除註釋及空白行並加上分流名稱
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' Domestic.yaml > Domestic1.yaml
@@ -47,7 +48,9 @@ sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Speedtest.yaml > Speedtest1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' DMM.yaml > DMM1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' AI\ Suite.yaml > AI_Suite.yaml
+
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Game.yaml > Game1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Reddit.yaml > Reddit1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' MOMOShop.yaml > MOMOShop1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' PChomeTW.yaml > PChome.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Shopee.yaml > Shopee1.yaml
@@ -117,6 +120,7 @@ cat downloads/Speedtest1.yaml >> Clash.yaml
 cat downloads/DMM1.yaml >> Clash.yaml
 cat downloads/AI_Suite.yaml >> Clash.yaml
 cat downloads/Game1.yaml >> Clash.yaml
+cat downloads/Reddit1.yaml >> Clash.yaml
 cat downloads/MOMOShop1.yaml >> Clash.yaml
 cat downloads/PChome.yaml >> Clash.yaml
 cat downloads/Shopee1.yaml >> Clash.yaml
