@@ -14,6 +14,25 @@ mkdir -p downloads && cd downloads
 wget https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Domestic.yaml
 wget https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/LAN.yaml
 wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/WeChat/WeChat.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Baidu/Baidu.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BaiDuTieBa/BaiDuTieBa.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Zhihu/Zhihu.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/115/115.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChengTongWangPan/ChengTongWangPan.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/iQIYI/iQIYI.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Youku/Youku.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/NetEaseMusic/NetEaseMusic.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Douyu/Douyu.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/CCTV/CCTV.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BOC/BOC.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/CMB/CMB.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/CCB/CCB.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/CGB/CGB.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/CEB/CEB.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BOCOM/BOCOM.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaTelecom/ChinaTelecom.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaUnicom/ChinaUnicom.yaml
+wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaMobile/ChinaMobile.yaml
 wget https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Game/GameDownloadCN/GameDownloadCN.yaml
 wget https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Proxy.yaml
 wget https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Speedtest.yaml
@@ -43,6 +62,25 @@ wget https://raw.githubusercontent.com/raymao96/Rules/main/Clash_Final.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' Domestic.yaml > Domestic1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' LAN.yaml > LAN1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' WeChat.yaml > WeChat1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' Baidu.yaml > Baidu1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' BaiDuTieBa.yaml > BaiDuTieBa1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' Zhihu.yaml > Zhihu1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' 115.yaml > 1151.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' ChengTongWangPan.yaml > ChengTongWangPan1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' iQIYI.yaml > iQIYI1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' Youku.yaml > Youku1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' NetEaseMusic.yaml > NetEaseMusic1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' Douyu.yaml > Douyu1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' CCTV.yaml > CCTV1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' BOC.yaml > BOC1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' CMB.yaml > CMB1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' CCB.yaml > CCB1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' CGB.yaml > CGB1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' CEB.yaml > CEB1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' BOCOM.yaml > BOCOM.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' ChinaTelecom.yaml > ChinaTelecom1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' ChinaUnicom.yaml > ChinaUnicom1.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' ChinaMobile.yaml > ChinaMobile1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' GameDownloadCN.yaml > GameDownloadCN1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Proxy.yaml > Proxy1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Speedtest.yaml > Speedtest1.yaml
@@ -114,6 +152,24 @@ cat downloads/TW.yaml >> Clash.yaml
 cat downloads/Domestic2.yaml >> Clash.yaml
 cat downloads/LAN1.yaml >> Clash.yaml
 cat downloads/WeChat1.yaml >> Clash.yaml
+cat downloads/Baidu1.yaml >> Clash.yaml
+cat downloads/BaiDuTieBa1.yaml >> Clash.yaml
+cat downloads/1151.yaml >> Clash.yaml
+cat downloads/ChengTongWangPan1.yaml >> Clash.yaml
+cat downloads/iQIYI1.yaml >> Clash.yaml
+cat downloads/Youku1.yaml >> Clash.yaml
+cat downloads/NetEaseMusic1.yaml >> Clash.yaml
+cat downloads/Douyu1.yaml >> Clash.yaml
+cat downloads/CCTV1.yaml >> Clash.yaml
+cat downloads/BOC1.yaml >> Clash.yaml
+cat downloads/CMB1.yaml >> Clash.yaml
+cat downloads/CCB1.yaml >> Clash.yaml
+cat downloads/CGB1.yaml >> Clash.yaml
+cat downloads/CEB1.yaml >> Clash.yaml
+cat downloads/BOCOM.yaml >> Clash.yaml
+cat downloads/ChinaTelecom1.yaml >> Clash.yaml
+cat downloads/ChinaUnicom1.yaml >> Clash.yaml
+cat downloads/ChinaMobile1.yaml >> Clash.yaml
 cat downloads/GameDownloadCN1.yaml >> Clash.yaml
 cat downloads/Proxy2.yaml >> Clash.yaml
 cat downloads/Speedtest1.yaml >> Clash.yaml
