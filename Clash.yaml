@@ -1,4 +1,4 @@
-# 更新日期： 2026-07-13 16:02
+# 更新日期： 2026-09-05 13:33
 port: 1087
 socks-port: 1080
 redir-port: 7892
@@ -43,15 +43,16 @@ dns:
 proxies:
 
 proxy-groups:
-  - { name: "🔰 境外流量", type: select, proxies: ["♻️ Auto"] }
+  - { name: "🔰 境外流量", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量"] }
   - { name: "🇨🇳 境内流量", type: select, proxies: ["DIRECT",/^(?=.*aaa)(?=.*bbb).*$/] }
-  - { name: "♻️ Auto", type: fallback, proxies: [/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/], url: "http://www.gstatic.com/generate_204", interval: 180 }
-  - { name: "Ⓜ️ Microsoft", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
+  - { name: "♻️ Auto", type: fallback, proxies: [/^(.*)(TW|HK|MO|JP|KR|SG|US)+(.*)$/], url: "http://www.gstatic.com/generate_204", interval: 180 }
+  - { name: "🤖 AI", type: select, proxies: ["♻️ Auto",/^(.*)(TW|JP|KR|SG|US)+(.*)$/] }
   - { name: "🍎 Apple", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
-  - { name: "🎬 YouTube", type: select, proxies: ["♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
-  - { name: "🎬 Netflix", type: select, proxies: ["♻️ Auto",/^(.*)(TW|HK|JP|US)+(.*)$/] }
-  - { name: "🎬 Disney", type: select, proxies: ["♻️ Auto",/^(.*)(TW|HK|JP|US)+(.*)$/] }
-  - { name: "🎬 BiliBili", type: select, proxies: ["🇨🇳 境内流量",/^(.*)(TW|HK)+(.*)$/] }
+  - { name: "Ⓜ️ Microsoft", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
+  - { name: "🎬 YouTube", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|MO|JP|KR|SG|US)+(.*)$/] }
+  - { name: "🎬 Netflix", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|JP|US)+(.*)$/] }
+  - { name: "🎬 Disney", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|JP|US)+(.*)$/] }
+  - { name: "🎬 BiliBili", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|MO)+(.*)$/] }
 
 rules:
 
@@ -198,8 +199,7 @@ rules:
   - DOMAIN-SUFFIX,getupnote.com,🔰 境外流量
   - DOMAIN-SUFFIX,discordapp.net,🔰 境外流量
   - DOMAIN-SUFFIX,discord.com,🔰 境外流量
-  - DOMAIN-SUFFIX,discord.gg,🔰 境外流量
-  - DOMAIN-SUFFIX,chatgpt.com,🔰 境外流量
+  - DOMAIN-SUFFIX,discord.gg,🔰 境外流
   - DOMAIN-SUFFIX,missav.com,🔰 境外流量
   - DOMAIN-SUFFIX,missav.ws,🔰 境外流量
   - DOMAIN-SUFFIX,missav.ai,🔰 境外流量
@@ -225,7 +225,6 @@ rules:
   - DOMAIN-SUFFIX,js.stripe.com,🔰 境外流量
 
   # Direct
-
   - DOMAIN-SUFFIX,abchina.com,DIRECT
   - DOMAIN-SUFFIX,abchina.com.cn,DIRECT
   - DOMAIN-SUFFIX,boc.cn,DIRECT
@@ -499,7 +498,9 @@ rules:
   - DOMAIN-SUFFIX,zmz002.com,DIRECT
   - DOMAIN-SUFFIX,gov.cn,DIRECT
   - DOMAIN-SUFFIX,cn,DIRECT
+
   - DOMAIN-SUFFIX,local,DIRECT
+
   - DOMAIN,apd-pcdnwxlogin.teg.tencent-cloud.net,DIRECT
   - DOMAIN,btrace.qq.com,DIRECT
   - DOMAIN,dldir1.qq.com,DIRECT
@@ -530,6 +531,7 @@ rules:
   - DOMAIN-SUFFIX,wxapp.tc.qq.com,DIRECT
   - DOMAIN-SUFFIX,wxs.qq.com,DIRECT
   - DOMAIN-SUFFIX,yun-hl.3g.qq.com,DIRECT
+
   - DOMAIN-SUFFIX,17swan.com,DIRECT
   - DOMAIN-SUFFIX,37swan.com,DIRECT
   - DOMAIN-SUFFIX,91.com,DIRECT
@@ -781,6 +783,7 @@ rules:
   - DOMAIN-SUFFIX,zuoyebang.cc,DIRECT
   - DOMAIN-SUFFIX,zuoyebang.com,DIRECT
   - DOMAIN-SUFFIX,zybang.com,DIRECT
+
   - DOMAIN,als.baidu.com,DIRECT
   - DOMAIN,cdn.hiphotos.baidu.com,DIRECT
   - DOMAIN,cpro.baidustatic.com,DIRECT
@@ -813,6 +816,7 @@ rules:
   - DOMAIN,tiebac.baidu.com,DIRECT
   - DOMAIN,tiebapic.baidu.com,DIRECT
   - DOMAIN-SUFFIX,tieba.baidu.com,DIRECT
+
   - DOMAIN,fhnfile.oss-cn-shenzhen.aliyuncs.com,DIRECT
   - DOMAIN-SUFFIX,115.com,DIRECT
   - DOMAIN-SUFFIX,115cdn.com,DIRECT
@@ -823,10 +827,12 @@ rules:
   - DOMAIN-SUFFIX,116cd.net,DIRECT
   - DOMAIN-SUFFIX,anxia.com,DIRECT
   - DOMAIN-SUFFIX,sq.cc,DIRECT
+
   - DOMAIN-SUFFIX,ctfile.com,DIRECT
   - DOMAIN-SUFFIX,ctfile.net,DIRECT
   - DOMAIN-SUFFIX,n802.com,DIRECT
   - DOMAIN-SUFFIX,tv002.com,DIRECT
+
   - DOMAIN-SUFFIX,71.am,DIRECT
   - DOMAIN-SUFFIX,71.am.com,DIRECT
   - DOMAIN-SUFFIX,71edge.com,DIRECT
@@ -883,6 +889,7 @@ rules:
   - IP-CIDR,23.40.241.251/32,DIRECT
   - IP-CIDR,23.40.242.10/32,DIRECT
   - IP-CIDR,23.53.32.88/32,DIRECT
+
   - DOMAIN-SUFFIX,0co3geye.cn,DIRECT
   - DOMAIN-SUFFIX,2isbbess.cn,DIRECT
   - DOMAIN-SUFFIX,33lwhaoinc.cn,DIRECT
@@ -918,6 +925,7 @@ rules:
   - DOMAIN-SUFFIX,youku.org,DIRECT
   - DOMAIN-SUFFIX,youqoo.net,DIRECT
   - IP-CIDR,106.11.0.0/16,DIRECT
+
   - DOMAIN,netease.ugcvideoss.ourdvs.com,DIRECT
   - DOMAIN-SUFFIX,163yun.com,DIRECT
   - DOMAIN-SUFFIX,api.iplay.163.com,DIRECT
@@ -946,6 +954,7 @@ rules:
   - IP-CIDR,59.111.128.0/17,DIRECT
   - IP-CIDR,59.111.19.33/32,DIRECT
   - IP-CIDR,59.111.21.14/31,DIRECT
+
   - DOMAIN-SUFFIX,bytefcdnrd.com,DIRECT
   - DOMAIN-SUFFIX,douyu.com,DIRECT
   - DOMAIN-SUFFIX,douyu.tv,DIRECT
@@ -959,6 +968,7 @@ rules:
   - DOMAIN-SUFFIX,edgesrv.com,DIRECT
   - DOMAIN-SUFFIX,guguyuyin.com,DIRECT
   - DOMAIN-SUFFIX,oywtv.com,DIRECT
+
   - DOMAIN-SUFFIX,cctv.cn,DIRECT
   - DOMAIN-SUFFIX,cctv.com,DIRECT
   - DOMAIN-SUFFIX,cctvlib.cn,DIRECT
@@ -996,6 +1006,7 @@ rules:
   - DOMAIN-SUFFIX,zggbdszt.com.cn,DIRECT
   - DOMAIN-SUFFIX,zggbdszt.net.cn,DIRECT
   - DOMAIN-SUFFIX,zygbdszt.net.cn,DIRECT
+
   - DOMAIN-SUFFIX,bank-of-china.com,DIRECT
   - DOMAIN-SUFFIX,bankofchina.com,DIRECT
   - DOMAIN-SUFFIX,boc.cn,DIRECT
@@ -1018,6 +1029,7 @@ rules:
   - DOMAIN-SUFFIX,bocim.com,DIRECT
   - DOMAIN-SUFFIX,bocservices.com.cn,DIRECT
   - DOMAIN-SUFFIX,ftcwifi.com,DIRECT
+
   - DOMAIN-SUFFIX,8008205555.cn,DIRECT
   - DOMAIN-SUFFIX,8008205555.com,DIRECT
   - DOMAIN-SUFFIX,bbf.org.cn,DIRECT
@@ -1056,6 +1068,7 @@ rules:
   - DOMAIN-SUFFIX,wuxizazhi.com.cn,DIRECT
   - DOMAIN-SUFFIX,wuxizazhi.net,DIRECT
   - DOMAIN-SUFFIX,wuxizazhi.net.cn,DIRECT
+
   - DOMAIN-SUFFIX,ccb-life.com.cn,DIRECT
   - DOMAIN-SUFFIX,ccb.cn,DIRECT
   - DOMAIN-SUFFIX,ccb.com,DIRECT
@@ -1074,10 +1087,12 @@ rules:
   - DOMAIN-SUFFIX,ccbseoul.com,DIRECT
   - DOMAIN-SUFFIX,ccbtrust.com.cn,DIRECT
   - DOMAIN-SUFFIX,ccbxt.com,DIRECT
+
   - DOMAIN-SUFFIX,95508.com,DIRECT
   - DOMAIN-SUFFIX,cgbchina.cn,DIRECT
   - DOMAIN-SUFFIX,cgbchina.com.cn,DIRECT
   - DOMAIN-SUFFIX,gdb.com.cn,DIRECT
+
   - DOMAIN-SUFFIX,cebbank.com,DIRECT
   - DOMAIN-SUFFIX,ceblease.com,DIRECT
   - DOMAIN-SUFFIX,eb-ind.com,DIRECT
@@ -1093,6 +1108,8 @@ rules:
   - DOMAIN-SUFFIX,everbright.com,DIRECT
   - DOMAIN-SUFFIX,secec.com,DIRECT
   - DOMAIN-SUFFIX,sunlife-everbright.com,DIRECT
+
+
   - DOMAIN-SUFFIX,01058511989.com,DIRECT
   - DOMAIN-SUFFIX,10000.gd.cn,DIRECT
   - DOMAIN-SUFFIX,189.cn,DIRECT
@@ -1176,6 +1193,7 @@ rules:
   - DOMAIN-SUFFIX,wuyou189.com,DIRECT
   - DOMAIN-SUFFIX,ycy100.cn,DIRECT
   - DOMAIN-SUFFIX,yichuangyun.com.cn,DIRECT
+
   - DOMAIN-SUFFIX,10010.cn,DIRECT
   - DOMAIN-SUFFIX,10010.com,DIRECT
   - DOMAIN-SUFFIX,10010.com.cn,DIRECT
@@ -1210,6 +1228,7 @@ rules:
   - DOMAIN-SUFFIX,wobaif.com,DIRECT
   - DOMAIN-SUFFIX,wom186.com,DIRECT
   - IP-CIDR,113.200.56.63/32,DIRECT
+
   - DOMAIN-SUFFIX,10086.cn,DIRECT
   - DOMAIN-SUFFIX,10086kuaixiu.com,DIRECT
   - DOMAIN-SUFFIX,12530.com,DIRECT
@@ -1246,6 +1265,7 @@ rules:
   - DOMAIN-SUFFIX,warmchina121.com,DIRECT
   - DOMAIN-SUFFIX,zdsdp.com,DIRECT
   - IP-CIDR,117.161.2.5/32,DIRECT
+
   - DOMAIN,assets1.xboxlive.cn,DIRECT
   - DOMAIN,assets2.xboxlive.cn,DIRECT
   - DOMAIN,cdn-ali.content.steamchina.com,DIRECT
@@ -1263,8 +1283,105 @@ rules:
   - DOMAIN,xz.pphimalayanrt.com,DIRECT
   - DOMAIN-SUFFIX,pdl.wow.battlenet.com.cn,DIRECT
 
-  # Proxy
+  # AI
+  - DOMAIN-SUFFIX,augment.com,🤖 AI
+  - DOMAIN-SUFFIX,augmentcode.com,🤖 AI
+  - DOMAIN-SUFFIX,ai.com,🤖 AI
+  - DOMAIN-SUFFIX,chatgpt.com,🤖 AI
+  - DOMAIN-SUFFIX,ct.sendgrid.net,🤖 AI
+  - DOMAIN-SUFFIX,featureassets.org,🤖 AI
+  - DOMAIN-SUFFIX,featuregates.org,🤖 AI
+  - DOMAIN-SUFFIX,intercom.io,🤖 AI
+  - DOMAIN-SUFFIX,intercomcdn.com,🤖 AI
+  - DOMAIN-SUFFIX,oaistatic.com,🤖 AI
+  - DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI
+  - DOMAIN-SUFFIX,openai.com,🤖 AI
+  - DOMAIN-SUFFIX,prodregistryv2.org,🤖 AI
+  - DOMAIN-SUFFIX,statsig.com,🤖 AI
+  - DOMAIN-SUFFIX,statsigapi.net,🤖 AI
+  - DOMAIN,cdn.openaimerge.com,🤖 AI
+  - DOMAIN,cdn.workos.com,🤖 AI
+  - DOMAIN,challenges.cloudflare.com,🤖 AI
+  - DOMAIN,chat.openai.com.cdn.cloudflare.net,🤖 AI
+  - DOMAIN,forwarder.workos.com,🤖 AI
+  - DOMAIN,humb.apple.com,🤖 AI
+  - DOMAIN,images.workoscdn.com,🤖 AI
+  - DOMAIN,js.stripe.com,🤖 AI
+  - DOMAIN,o207216.ingest.sentry.io,🤖 AI
+  - DOMAIN,o33249.ingest.sentry.io,🤖 AI
+  - DOMAIN,openaiapi-site.azureedge.net,🤖 AI
+  - DOMAIN,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net,🤖 AI
+  - DOMAIN,openaicomproductionae4b.blob.core.windows.net,🤖 AI
+  - DOMAIN,production-openaicom-storage.azureedge.net,🤖 AI
+  - DOMAIN,rum.browser-intake-datadoghq.com,🤖 AI
+  - DOMAIN,setup.workos.com,🤖 AI
+  - DOMAIN,workos.imgix.net,🤖 AI
+  - DOMAIN-SUFFIX,cerebras.ai,🤖 AI
+  - DOMAIN-SUFFIX,chorus.sh,🤖 AI
+  - DOMAIN-SUFFIX,anthropic.com,🤖 AI
+  - DOMAIN-SUFFIX,claude.ai,🤖 AI
+  - DOMAIN-SUFFIX,claude.com,🤖 AI
+  - DOMAIN-SUFFIX,claudeusercontent.com,🤖 AI
+  - DOMAIN,gateway.ai.cloudflare.com,🤖 AI
+  - DOMAIN-SUFFIX,githubcopilot.com,🤖 AI
+  - DOMAIN-SUFFIX,microsoftonline.com,🤖 AI
+  - DOMAIN,copilot.microsoft.com,🤖 AI
+  - DOMAIN-SUFFIX,cursor.sh,🤖 AI
+  - DOMAIN-SUFFIX,diabrowser.engineering,🤖 AI
+  - DOMAIN-SUFFIX,dify.ai,🤖 AI
+  - DOMAIN,api.github.com,🤖 AI
+  - DOMAIN-KEYWORD,alkalimakersuite-pa.clients6.google.com,🤖 AI
+  - DOMAIN-SUFFIX,aistudio.google.com,🤖 AI
+  - DOMAIN-SUFFIX,makersuite.google.com,🤖 AI
+  - DOMAIN-SUFFIX,generativeai.google,🤖 AI
+  - DOMAIN,ai.google.dev,🤖 AI
+  - DOMAIN,alkalicore-pa.clients6.google.com,🤖 AI
+  - DOMAIN,waa-pa.clients6.google.com,🤖 AI
+  - DOMAIN-SUFFIX,deepmind.com,🤖 AI
+  - DOMAIN-SUFFIX,deepmind.google,🤖 AI
+  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,🤖 AI
+  - DOMAIN-SUFFIX,geller-pa.googleapis.com,🤖 AI
+  - DOMAIN-SUFFIX,proactivebackend-pa.googleapis.com,🤖 AI
+  - DOMAIN-SUFFIX,aisandbox-pa.googleapis.com,🤖 AI
+  - DOMAIN-SUFFIX,apis.google.com,🤖 AI
+  - DOMAIN-SUFFIX,bard.google.com,🤖 AI
+  - DOMAIN-SUFFIX,gemini.google,🤖 AI
+  - DOMAIN-SUFFIX,gemini.google.com,🤖 AI
+  - DOMAIN-SUFFIX,robinfrontend-pa.googleapis.com,🤖 AI
+  - DOMAIN-SUFFIX,notebooklm.google,🤖 AI
+  - DOMAIN-SUFFIX,notebooklm.google.com,🤖 AI
+  - DOMAIN-SUFFIX,x.ai,🤖 AI
+  - DOMAIN-SUFFIX,grok.com,🤖 AI
+  - DOMAIN-SUFFIX,groq.com,🤖 AI
+  - DOMAIN-SUFFIX,clipdrop.co,🤖 AI
+  - DOMAIN-SUFFIX,jasper.ai,🤖 AI
+  - DOMAIN-SUFFIX,jetbrains.ai,🤖 AI
+  - DOMAIN-SUFFIX,meta.ai,🤖 AI
+  - DOMAIN-SUFFIX,meta.com,🤖 AI
+  - DOMAIN-SUFFIX,openart.ai,🤖 AI
+  - DOMAIN-SUFFIX,openrouter.ai,🤖 AI
+  - DOMAIN-SUFFIX,perplexity.ai,🤖 AI
+  - DOMAIN-SUFFIX,poe.com,🤖 AI
+  - DOMAIN-SUFFIX,apple-relay.apple.com,🤖 AI
+  - DOMAIN-SUFFIX,apple-relay.fastly-edge.com,🤖 AI
+  - DOMAIN-SUFFIX,apple-relay.cloudflare.com,🤖 AI
+  - DOMAIN-SUFFIX,apple-relay.mask.apple-dns.net,🤖 AI
+  - DOMAIN-SUFFIX,guzzoni.apple.com,🤖 AI
+  - DOMAIN-SUFFIX,cp4.cloudflare.com,🤖 AI
+  - DOMAIN-SUFFIX,gspe1-ssl.ls.apple.com,🤖 AI
+  - DOMAIN-SUFFIX,smoot.apple.com,🤖 AI
+  - DOMAIN-SUFFIX,amp-api.apps.apple.com,🤖 AI
+  - DOMAIN-SUFFIX,gateway.icloud.com,🤖 AI
+  - DOMAIN-SUFFIX,updates.cdn-apple.com,🤖 AI
+  - DOMAIN-SUFFIX,sora.com,🤖 AI
+  - DOMAIN-SUFFIX,trae.ai,🤖 AI
+  - DOMAIN-SUFFIX,traeapi.us,🤖 AI
+  - DOMAIN-SUFFIX,windsurf.com,🤖 AI
+  - DOMAIN-SUFFIX,codeium.com,🤖 AI
+  - DOMAIN-SUFFIX,codeiumdata.com,🤖 AI
+  - DOMAIN-SUFFIX,zed.dev,🤖 AI
 
+  # Proxy
   - DOMAIN,cdp.cloud.unity3d.com,🔰 境外流量
   - DOMAIN-SUFFIX,battle.net,🔰 境外流量
   - DOMAIN-SUFFIX,battlenet.com,🔰 境外流量
@@ -1941,110 +2058,20 @@ rules:
   - DOMAIN-SUFFIX,picjs.xyz,🔰 境外流量
   - DOMAIN-SUFFIX,wheel-size.cn,🔰 境外流量
   - DOMAIN-SUFFIX,chalungu.cn,🔰 境外流量
+
   - DOMAIN-SUFFIX,fast.com,🔰 境外流量
   - DOMAIN-KEYWORD,speedtest,🔰 境外流量
   - DOMAIN-SUFFIX,ooklaserver.net,🔰 境外流量
   - DOMAIN,speed.dler.io,🔰 境外流量
   - DOMAIN-SUFFIX,speed.cloudflare.com,🔰 境外流量
+
   - DOMAIN-SUFFIX,dmm-extension.com,🔰 境外流量
   - DOMAIN-SUFFIX,dmm.co.jp,🔰 境外流量
   - DOMAIN-SUFFIX,dmm.com,🔰 境外流量
   - DOMAIN-SUFFIX,img.vm-movie.jp,🔰 境外流量
   - DOMAIN-SUFFIX,p-smith.com,🔰 境外流量
   - DOMAIN-SUFFIX,videomarket.jp,🔰 境外流量
-  - DOMAIN-SUFFIX,vmdash-cenc.akamaized.net,🔰 境外流量  
-  - DOMAIN-SUFFIX,augment.com,🔰 境外流量
-  - DOMAIN-SUFFIX,augmentcode.com,🔰 境外流量
-  - DOMAIN-SUFFIX,ai.com,🔰 境外流量
-  - DOMAIN-SUFFIX,chatgpt.com,🔰 境外流量
-  - DOMAIN-SUFFIX,ct.sendgrid.net,🔰 境外流量
-  - DOMAIN-SUFFIX,featureassets.org,🔰 境外流量
-  - DOMAIN-SUFFIX,featuregates.org,🔰 境外流量
-  - DOMAIN-SUFFIX,intercom.io,🔰 境外流量
-  - DOMAIN-SUFFIX,intercomcdn.com,🔰 境外流量
-  - DOMAIN-SUFFIX,oaistatic.com,🔰 境外流量
-  - DOMAIN-SUFFIX,oaiusercontent.com,🔰 境外流量
-  - DOMAIN-SUFFIX,openai.com,🔰 境外流量
-  - DOMAIN-SUFFIX,prodregistryv2.org,🔰 境外流量
-  - DOMAIN-SUFFIX,statsig.com,🔰 境外流量
-  - DOMAIN-SUFFIX,statsigapi.net,🔰 境外流量
-  - DOMAIN,cdn.openaimerge.com,🔰 境外流量
-  - DOMAIN,cdn.workos.com,🔰 境外流量
-  - DOMAIN,challenges.cloudflare.com,🔰 境外流量
-  - DOMAIN,chat.openai.com.cdn.cloudflare.net,🔰 境外流量
-  - DOMAIN,forwarder.workos.com,🔰 境外流量
-  - DOMAIN,humb.apple.com,🔰 境外流量
-  - DOMAIN,images.workoscdn.com,🔰 境外流量
-  - DOMAIN,js.stripe.com,🔰 境外流量
-  - DOMAIN,o207216.ingest.sentry.io,🔰 境外流量
-  - DOMAIN,o33249.ingest.sentry.io,🔰 境外流量
-  - DOMAIN,openaiapi-site.azureedge.net,🔰 境外流量
-  - DOMAIN,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net,🔰 境外流量
-  - DOMAIN,openaicomproductionae4b.blob.core.windows.net,🔰 境外流量
-  - DOMAIN,production-openaicom-storage.azureedge.net,🔰 境外流量
-  - DOMAIN,rum.browser-intake-datadoghq.com,🔰 境外流量
-  - DOMAIN,setup.workos.com,🔰 境外流量
-  - DOMAIN,workos.imgix.net,🔰 境外流量
-  - DOMAIN-SUFFIX,cerebras.ai,🔰 境外流量
-  - DOMAIN-SUFFIX,chorus.sh,🔰 境外流量
-  - DOMAIN-SUFFIX,anthropic.com,🔰 境外流量
-  - DOMAIN-SUFFIX,claude.ai,🔰 境外流量
-  - DOMAIN-SUFFIX,claude.com,🔰 境外流量
-  - DOMAIN-SUFFIX,claudeusercontent.com,🔰 境外流量
-  - DOMAIN,gateway.ai.cloudflare.com,🔰 境外流量
-  - DOMAIN-SUFFIX,githubcopilot.com,🔰 境外流量
-  - DOMAIN-SUFFIX,microsoftonline.com,🔰 境外流量
-  - DOMAIN,copilot.microsoft.com,🔰 境外流量
-  - DOMAIN-SUFFIX,cursor.sh,🔰 境外流量
-  - DOMAIN-SUFFIX,diabrowser.engineering,🔰 境外流量
-  - DOMAIN-SUFFIX,dify.ai,🔰 境外流量
-  - DOMAIN,api.github.com,🔰 境外流量
-  - DOMAIN-KEYWORD,alkalimakersuite-pa.clients6.google.com,🔰 境外流量
-  - DOMAIN-SUFFIX,aistudio.google.com,🔰 境外流量
-  - DOMAIN-SUFFIX,makersuite.google.com,🔰 境外流量
-  - DOMAIN-SUFFIX,generativeai.google,🔰 境外流量
-  - DOMAIN,ai.google.dev,🔰 境外流量
-  - DOMAIN,alkalicore-pa.clients6.google.com,🔰 境外流量
-  - DOMAIN,waa-pa.clients6.google.com,🔰 境外流量
-  - DOMAIN-SUFFIX,deepmind.com,🔰 境外流量
-  - DOMAIN-SUFFIX,deepmind.google,🔰 境外流量
-  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,🔰 境外流量
-  - DOMAIN-SUFFIX,geller-pa.googleapis.com,🔰 境外流量
-  - DOMAIN-SUFFIX,proactivebackend-pa.googleapis.com,🔰 境外流量
-  - DOMAIN-SUFFIX,aisandbox-pa.googleapis.com,🔰 境外流量
-  - DOMAIN-SUFFIX,apis.google.com,🔰 境外流量
-  - DOMAIN-SUFFIX,bard.google.com,🔰 境外流量
-  - DOMAIN-SUFFIX,gemini.google,🔰 境外流量
-  - DOMAIN-SUFFIX,gemini.google.com,🔰 境外流量
-  - DOMAIN-SUFFIX,robinfrontend-pa.googleapis.com,🔰 境外流量
-  - DOMAIN-SUFFIX,notebooklm.google,🔰 境外流量
-  - DOMAIN-SUFFIX,notebooklm.google.com,🔰 境外流量
-  - DOMAIN-SUFFIX,x.ai,🔰 境外流量
-  - DOMAIN-SUFFIX,grok.com,🔰 境外流量
-  - DOMAIN-SUFFIX,groq.com,🔰 境外流量
-  - DOMAIN-SUFFIX,clipdrop.co,🔰 境外流量
-  - DOMAIN-SUFFIX,jasper.ai,🔰 境外流量
-  - DOMAIN-SUFFIX,jetbrains.ai,🔰 境外流量
-  - DOMAIN-SUFFIX,meta.ai,🔰 境外流量
-  - DOMAIN-SUFFIX,meta.com,🔰 境外流量
-  - DOMAIN-SUFFIX,openart.ai,🔰 境外流量
-  - DOMAIN-SUFFIX,openrouter.ai,🔰 境外流量
-  - DOMAIN-SUFFIX,perplexity.ai,🔰 境外流量
-  - DOMAIN-SUFFIX,poe.com,🔰 境外流量
-  - DOMAIN-SUFFIX,apple-relay.apple.com,🔰 境外流量
-  - DOMAIN-SUFFIX,apple-relay.fastly-edge.com,🔰 境外流量
-  - DOMAIN-SUFFIX,apple-relay.cloudflare.com,🔰 境外流量
-  - DOMAIN-SUFFIX,guzzoni.apple.com,🔰 境外流量
-  - DOMAIN-SUFFIX,cp4.cloudflare.com,🔰 境外流量
-  - DOMAIN-SUFFIX,gspe1-ssl.ls.apple.com,🔰 境外流量
-  - DOMAIN-SUFFIX,smoot.apple.com,🔰 境外流量
-  - DOMAIN-SUFFIX,sora.com,🔰 境外流量
-  - DOMAIN-SUFFIX,trae.ai,🔰 境外流量
-  - DOMAIN-SUFFIX,traeapi.us,🔰 境外流量
-  - DOMAIN-SUFFIX,windsurf.com,🔰 境外流量
-  - DOMAIN-SUFFIX,codeium.com,🔰 境外流量
-  - DOMAIN-SUFFIX,codeiumdata.com,🔰 境外流量
-  - DOMAIN-SUFFIX,zed.dev,🔰 境外流量
+  - DOMAIN-SUFFIX,vmdash-cenc.akamaized.net,🔰 境外流量
   - DOMAIN,eaasserts-a.akamaihd.net,🔰 境外流量
   - DOMAIN,originasserts.akamaized.net,🔰 境外流量
   - DOMAIN,gog.salesmanago.com,🔰 境外流量
@@ -2468,13 +2495,16 @@ rules:
   - DOMAIN-SUFFIX,lpl.com.cn,🔰 境外流量
   - DOMAIN-SUFFIX,molesports.com,🔰 境外流量
   - DOMAIN-SUFFIX,playvalorant.com,🔰 境外流量
+  - DOMAIN-SUFFIX,pvp.net,🔰 境外流量
   - DOMAIN-SUFFIX,pvp.tv,🔰 境外流量
   - DOMAIN-SUFFIX,rgpub.io,🔰 境外流量
   - DOMAIN-SUFFIX,riot-games.com,🔰 境外流量
   - DOMAIN-SUFFIX,riot.com,🔰 境外流量
   - DOMAIN-SUFFIX,riot.net,🔰 境外流量
+  - DOMAIN-SUFFIX,riotcdn.net,🔰 境外流量
   - DOMAIN-SUFFIX,riotforgegames.com,🔰 境外流量
   - DOMAIN-SUFFIX,riotgames.co.kr,🔰 境外流量
+  - DOMAIN-SUFFIX,riotgames.com,🔰 境外流量
   - DOMAIN-SUFFIX,riotgames.info,🔰 境外流量
   - DOMAIN-SUFFIX,riotgames.jp,🔰 境外流量
   - DOMAIN-SUFFIX,riotgames.net,🔰 境外流量
@@ -2551,9 +2581,6 @@ rules:
   - DOMAIN-SUFFIX,ubisoft-uplay-savegames.s3.amazonaws.com,🔰 境外流量
   - DOMAIN-SUFFIX,ubisoft.com,🔰 境外流量
   - DOMAIN-SUFFIX,uplay.com,🔰 境外流量
-  - DOMAIN-SUFFIX,pvp.net,🔰 境外流量
-  - DOMAIN-SUFFIX,riotcdn.net,🔰 境外流量
-  - DOMAIN-SUFFIX,riotgames.com,🔰 境外流量
   - DOMAIN-SUFFIX,beth.games,🔰 境外流量
   - DOMAIN-SUFFIX,bethesda.net,🔰 境外流量
   - DOMAIN-SUFFIX,bethesdagamestudios.com,🔰 境外流量
@@ -2596,23 +2623,24 @@ rules:
   - DOMAIN-KEYWORD,steambroadcast,🔰 境外流量
   - DOMAIN-KEYWORD,steamstore,🔰 境外流量
   - DOMAIN-KEYWORD,steamuserimages,🔰 境外流量
+  - IP-CIDR,103.4.115.248/32,🔰 境外流量
   - IP-CIDR,182.162.135.1/32,🔰 境外流量
+  - IP-CIDR,185.60.112.157/32,🔰 境外流量
+  - IP-CIDR,185.60.112.158/32,🔰 境外流量
   - IP-CIDR,210.242.235.6/32,🔰 境外流量
+  - IP-CIDR,24.105.30.129/32,🔰 境外流量
   - IP-CIDR,54.94.196.47/32,🔰 境外流量
   - IP-CIDR,182.162.132.1/32,🔰 境外流量
+  - IP-CIDR,103.4.114.233/32,🔰 境外流量
   - IP-CIDR,182.162.116.1/32,🔰 境外流量
   - IP-CIDR,202.9.67.59/32,🔰 境外流量
   - IP-CIDR,203.69.111.4/32,🔰 境外流量
+  - IP-CIDR,24.105.62.129/32,🔰 境外流量
   - IP-CIDR,54.207.104.145/32,🔰 境外流量
   - IP-CIDR,35.192.0.0/12,🔰 境外流量
-  - IP-CIDR,185.60.112.157/32,🔰 境外流量
-  - IP-CIDR,185.60.114.159/32,🔰 境外流量
   - IP-CIDR,203.66.81.98/32,🔰 境外流量
   - IP-CIDR,211.234.110.1/32,🔰 境外流量
-  - IP-CIDR,24.105.30.129/32,🔰 境外流量
-  - IP-CIDR,24.105.62.129/32,🔰 境外流量
   - IP-CIDR,54.207.107.12/32,🔰 境外流量
-  - IP-CIDR,103.4.114.233/32,🔰 境外流量
   - IP-CIDR,202.9.67.254/32,🔰 境外流量
   - IP-CIDR,222.231.22.1/32,🔰 境外流量
   - IP-CIDR,13.210.25.233/32,🔰 境外流量
@@ -2637,11 +2665,11 @@ rules:
   - IP-CIDR,52.50.131.212/32,🔰 境外流量
   - IP-CIDR,54.207.168.84/32,🔰 境外流量
   - IP-CIDR,54.248.64.192/32,🔰 境外流量
-  - IP-CIDR,103.4.115.248/32,🔰 境外流量
   - IP-CIDR,137.221.105.2/32,🔰 境外流量
-  - IP-CIDR,185.60.112.158/32,🔰 境外流量
+  - IP-CIDR,185.60.114.159/32,🔰 境外流量
   - IP-CIDR,210.71.148.11/32,🔰 境外流量
   - IP-CIDR,211.115.104.1/32,🔰 境外流量
+
   - DOMAIN-SUFFIX,redd.it,🔰 境外流量
   - DOMAIN-SUFFIX,reddit.com,🔰 境外流量
   - DOMAIN-SUFFIX,redditmail.com,🔰 境外流量
@@ -2650,15 +2678,18 @@ rules:
   - DOMAIN-SUFFIX,reddituploads.com,🔰 境外流量
   - DOMAIN-SUFFIX,reddituploads.com.cdn-cf.behance.net,🔰 境外流量
   - DOMAIN-SUFFIX,reddituploads.com.cdn-cf.dropbox.com,🔰 境外流量
+
   - DOMAIN-SUFFIX,momo.dm,🔰 境外流量
   - DOMAIN-SUFFIX,momo5188.com,🔰 境外流量
   - DOMAIN-SUFFIX,momomall.com.tw,🔰 境外流量
   - DOMAIN-SUFFIX,momoshop.com.tw,🔰 境外流量
+
   - DOMAIN-SUFFIX,ecapi-pchome.cdn.hinet.net,🔰 境外流量
   - DOMAIN-SUFFIX,ecimg.tw,🔰 境外流量
   - DOMAIN-SUFFIX,pchome.com.tw,🔰 境外流量
   - DOMAIN-SUFFIX,pchomepay.com.tw,🔰 境外流量
   - DOMAIN-SUFFIX,pcloud.tw,🔰 境外流量
+
   - DOMAIN-SUFFIX,shopee.cl,🔰 境外流量
   - DOMAIN-SUFFIX,shopee.cn,🔰 境外流量
   - DOMAIN-SUFFIX,shopee.co.id,🔰 境外流量
@@ -2682,7 +2713,6 @@ rules:
   - DOMAIN-SUFFIX,shp.ee,🔰 境外流量
 
   # Microsoft
-
   - DOMAIN-SUFFIX,here.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,here.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,heremaps.cn,Ⓜ️ Microsoft
@@ -3274,7 +3304,6 @@ rules:
   - DOMAIN-SUFFIX,statics-marketingsites-wcus-ms-com.akamaized.net,Ⓜ️ Microsoft
 
   # Apple
-
   - DOMAIN-KEYWORD,apple.com.akadns.net,🍎 Apple
   - DOMAIN-KEYWORD,icloud.com.akadns.net,🍎 Apple
   - DOMAIN-SUFFIX,aaplimg.com,🍎 Apple
@@ -3291,6 +3320,7 @@ rules:
   - DOMAIN-SUFFIX,mzstatic.com,🍎 Apple
   - DOMAIN-SUFFIX,apple.comscoreresearch.com,🍎 Apple
   - DOMAIN-SUFFIX,apple.news,🍎 Apple
+
   - DOMAIN-SUFFIX,applemusic.com,🍎 Apple
   - DOMAIN-SUFFIX,music.apple.com,🍎 Apple
   - DOMAIN,aod.itunes.apple.com,🍎 Apple
@@ -3302,7 +3332,6 @@ rules:
   - DOMAIN-SUFFIX,blobstore.apple.com,🍎 Apple
 
   # YouTube
-
   - DOMAIN-SUFFIX,googlevideo.com,🎬 YouTube
   - DOMAIN-SUFFIX,gvt1.com,🎬 YouTube
   - DOMAIN-SUFFIX,video.google.com,🎬 YouTube
@@ -3471,7 +3500,6 @@ rules:
 
 
   # Disney
-
   - DOMAIN-SUFFIX,cdn.registerdisney.go.com,🎬 Disney
   - DOMAIN-SUFFIX,disney-plus.net,🎬 Disney
   - DOMAIN-SUFFIX,disney.api.edge.bamgrid.com,🎬 Disney
@@ -3480,9 +3508,7 @@ rules:
   - DOMAIN-SUFFIX,disneyplus.com,🎬 Disney
   - DOMAIN-SUFFIX,disneystreaming.com,🎬 Disney
   - DOMAIN-SUFFIX,dssott.com,🎬 Disney
-
   # Netflix
-
   - DOMAIN-SUFFIX,netflix.com,🎬 Netflix
   - DOMAIN-SUFFIX,netflix.net,🎬 Netflix
   - DOMAIN-SUFFIX,nflxext.com,🎬 Netflix
@@ -3490,9 +3516,7 @@ rules:
   - DOMAIN-SUFFIX,nflximg.net,🎬 Netflix
   - DOMAIN-SUFFIX,nflxso.net,🎬 Netflix
   - DOMAIN-SUFFIX,nflxvideo.net,🎬 Netflix
-
   # Bilibili
-
   - DOMAIN-SUFFIX,acg.tv,🎬 BiliBili
   - DOMAIN-SUFFIX,acgvideo.com,🎬 BiliBili
   - DOMAIN-SUFFIX,b23.tv,🎬 BiliBili
@@ -3506,21 +3530,24 @@ rules:
   - DOMAIN,apiintl.biliapi.net,🎬 BiliBili
 
   # TW
-
   - DOMAIN-SUFFIX,bahamut.com.tw,🔰 境外流量
   - DOMAIN-SUFFIX,gamer.com.tw,🔰 境外流量
   - DOMAIN,gamer-cds.cdn.hinet.net,🔰 境外流量
   - DOMAIN,gamer2-cds.cdn.hinet.net,🔰 境外流量
-  - DOMAIN,bahamut.akamaized.net,🔰 境外流量  
+  - DOMAIN,bahamut.akamaized.net,🔰 境外流量
+  
   - DOMAIN-SUFFIX,kkbox.com,🔰 境外流量
   - DOMAIN-SUFFIX,kkbox.com.tw,🔰 境外流量
   - DOMAIN-SUFFIX,kfs.io,🔰 境外流量
+
   - DOMAIN-SUFFIX,kktv.me,🔰 境外流量
   - DOMAIN-SUFFIX,kktv.com.tw,🔰 境外流量
   - DOMAIN,kktv-theater.kk.stream,🔰 境外流量
+
   - DOMAIN-SUFFIX,d3c7rimkq79yfu.cloudfront.net,🔰 境外流量
   - DOMAIN-SUFFIX,linetv.tw,🔰 境外流量
   - DOMAIN-SUFFIX,profile.line-scdn.net,🔰 境外流量
+
 
   # Lan
 

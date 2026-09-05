@@ -85,8 +85,6 @@ sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Proxy.yaml > Proxy1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Speedtest.yaml > Speedtest1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' DMM.yaml > DMM1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' AI\ Suite.yaml > AI_Suite.yaml
-
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Game.yaml > Game1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Reddit.yaml > Reddit1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' MOMOShop.yaml > MOMOShop1.yaml
@@ -96,6 +94,7 @@ sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' KKBOX.yaml > KKBOX1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' KKTV.yaml > KKTV1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Line\ TV.yaml > LineTV.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🤖 AI/g' AI\ Suite.yaml > AI_Suite.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,Ⓜ️ Microsoft/g' Microsoft.yaml > Microsoft1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🍎 Apple/g' Apple.yaml > Apple1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🍎 Apple/g' Apple\ Music.yaml > Apple_Music.yaml
@@ -111,7 +110,7 @@ sed -i '' -e '1i \
 sed -i '' -e '1i \
   # Proxy' Proxy1.yaml
 sed -i '' -e '1i \
-  ' AI_Suite.yaml
+  # AI' AI_Suite.yaml
 sed -i '' -e '1i \
   # Microsoft' Microsoft1.yaml
 sed -i '' -e '1i \
@@ -130,15 +129,6 @@ sed -i '' -e '1i \
   ' KKBOX1.yaml
 
 # 重新加上空行
-sed -e "/#/{x;p;x;G;}" Domestic1.yaml > Domestic2.yaml
-sed -e "/#/{x;p;x;G;}" Proxy1.yaml > Proxy2.yaml
-sed -e "/#/{x;p;x;G;}" Microsoft1.yaml > Microsoft2.yaml
-sed -e "/#/{x;p;x;G;}" Apple1.yaml > Apple2.yaml
-sed -e "/#/{x;p;x;G;}" YouTube1.yaml > YouTube2.yaml
-sed -e "/#/{x;p;p;x;G;}" Disney.yaml > Disney2.yaml
-sed -e "/#/{x;p;p;x;G;}" Netflix1.yaml > Netflix2.yaml
-sed -e "/#/{x;p;p;x;G;}" Bilibili1.yaml > Bilibili2.yaml
-sed -e "/#/{x;p;x;G;}" Bahamut1.yaml > Bahamut2.yaml
 sed -e "/#/{x;p;x;}" Clash_TW.yaml > TW.yaml
 sed -e "/#/{x;p;x;}" Clash_Final.yaml > Final.yaml
 
@@ -149,49 +139,93 @@ echo "# 更新日期： $date" > $file
 # 合併為單一檔案
 cat head.yml >> Clash.yaml
 cat downloads/TW.yaml >> Clash.yaml
-cat downloads/Domestic2.yaml >> Clash.yaml
+echo >> Clash.yaml
+cat downloads/Domestic1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/LAN1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/WeChat1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/Baidu1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/BaiDuTieBa1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/1151.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/ChengTongWangPan1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/iQIYI1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/Youku1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/NetEaseMusic1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/Douyu1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/CCTV1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/BOC1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/CMB1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/CCB1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/CGB1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/CEB1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/BOCOM.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/ChinaTelecom1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/ChinaUnicom1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/ChinaMobile1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/GameDownloadCN1.yaml >> Clash.yaml
-cat downloads/Proxy2.yaml >> Clash.yaml
-cat downloads/Speedtest1.yaml >> Clash.yaml
-cat downloads/DMM1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/AI_Suite.yaml >> Clash.yaml
+echo >> Clash.yaml
+cat downloads/Proxy1.yaml >> Clash.yaml
+echo >> Clash.yaml
+cat downloads/Speedtest1.yaml >> Clash.yaml
+echo >> Clash.yaml
+cat downloads/DMM1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/Game1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/Reddit1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/MOMOShop1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/PChome.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/Shopee1.yaml >> Clash.yaml
-cat downloads/Microsoft2.yaml >> Clash.yaml
-cat downloads/Apple2.yaml >> Clash.yaml
+echo >> Clash.yaml
+cat downloads/Microsoft1.yaml >> Clash.yaml
+echo >> Clash.yaml
+cat downloads/Apple1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/Apple_Music.yaml >> Clash.yaml
-cat downloads/YouTube2.yaml >> Clash.yaml
+echo >> Clash.yaml
+cat downloads/YouTube1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/YouTube_Music.yaml >> Clash.yaml
-cat downloads/Disney2.yaml >> Clash.yaml
-cat downloads/Netflix2.yaml >> Clash.yaml
-cat downloads/Bilibili2.yaml >> Clash.yaml
-cat downloads/Bahamut2.yaml >> Clash.yaml
+echo >> Clash.yaml
+cat downloads/Disney.yaml >> Clash.yaml
+echo >> Clash.yaml
+cat downloads/Netflix1.yaml >> Clash.yaml
+echo >> Clash.yaml
+cat downloads/Bilibili1.yaml >> Clash.yaml
+echo >> Clash.yaml
+cat downloads/Bahamut1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/KKBOX1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/KKTV1.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/LineTV.yaml >> Clash.yaml
+echo >> Clash.yaml
 cat downloads/Final.yaml >> Clash.yaml
 
 # 清理多餘檔案

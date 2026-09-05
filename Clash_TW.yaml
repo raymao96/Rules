@@ -1,5 +1,12 @@
   # VPS
   - DOMAIN-SUFFIX,my.yecaoyun.com,DIRECT
+  
+  # Youtube
+  - DOMAIN-SUFFIX,services.googleapis.cn,🎬 YouTube
+  - DOMAIN-SUFFIX,xn--ngstr-lra8j.com,DIRECT
+  - DOMAIN-SUFFIX,clientservices.googleapis.com,🎬 YouTube
+  - DOMAIN-SUFFIX,ggpht.com,🎬 YouTube
+  - DOMAIN-KEYWORD,google,🎬 YouTube
 
   # REJECT UDP 53
   - IP-CIDR,8.8.8.8/32,🔰 境外流量
@@ -110,6 +117,10 @@
   - DOMAIN-SUFFIX,adobe.io,REJECT
   - DOMAIN-SUFFIX,adobestats.io,REJECT
   - DOMAIN,lcs-cops.adobe.io,DIRECT
+  - DOMAIN-KEYWORD,gvt2,🎬 YouTube
+  - DOMAIN-SUFFIX,doubleclick.net,🎬 YouTube
+  - DOMAIN-SUFFIX,googleadservices.com,🎬 YouTube
+  - DOMAIN-SUFFIX,googlesyndication.com,🎬 YouTube
   - DOMAIN-SUFFIX,bahamut.com.tw,🔰 境外流量
   - DOMAIN-SUFFIX,gamer.com.tw,🔰 境外流量
   - DOMAIN,gamer-cds.cdn.hinet.net,🔰 境外流量
@@ -138,7 +149,6 @@
   - DOMAIN-SUFFIX,discordapp.net,🔰 境外流量
   - DOMAIN-SUFFIX,discord.com,🔰 境外流量
   - DOMAIN-SUFFIX,discord.gg,🔰 境外流量
-  - DOMAIN-SUFFIX,chatgpt.com,🔰 境外流量
   - DOMAIN-SUFFIX,missav.com,🔰 境外流量
   - DOMAIN-SUFFIX,missav.ws,🔰 境外流量
   - DOMAIN-SUFFIX,missav.ai,🔰 境外流量
