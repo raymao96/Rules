@@ -9,10 +9,11 @@ mode: rule
 log-level: debug
 external-controller: 127.0.0.1:9090
 skip-proxy: '127.0.0.1, 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, 100.64.0.0/10, 17.0.0.0/8, localhost, *.local, *.crashlytics.com'
+ipv6: true
 
 dns:
   enable: true
-  ipv6: false
+  ipv6: true
   listen: '0.0.0.0:1053'
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
@@ -20,10 +21,20 @@ dns:
   default-nameserver:
     - 119.29.29.29
     - 223.5.5.5
+    - 2001:4860:4860::8888
+  proxy-server-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  nameserver-policy:
+    'geosite:cn':
+      - 223.5.5.5
+      - 119.29.29.29
   nameserver:
     - 223.5.5.5
     - 119.29.29.29
+    - 2001:4860:4860::8888
     - https://dns.google/dns-query
+    - https://cloudflare-dns.com/dns-query
   fake-ip-filter:
     - '*.lan'
     - '*.edu.cn'
@@ -45,7 +56,7 @@ proxy-groups:
   - { name: "🔰 境外流量", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量"] }
   - { name: "🇨🇳 境内流量", type: select, proxies: ["DIRECT",/^(?=.*aaa)(?=.*bbb).*$/] }
   - { name: "♻️ Auto", type: fallback, proxies: [/^(.*)(TW|HK|MO|JP|KR|SG|US)+(.*)$/], url: "http://www.gstatic.com/generate_204", interval: 180 }
-  - { name: "🤖 AI", type: select, proxies: ["♻️ Auto",/^(.*)(TW|JP|KR|SG|US)+(.*)$/] }
+  - { name: "🤖 AI", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|JP|KR|SG|US)+(.*)$/] }
   - { name: "🍎 Apple", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
   - { name: "Ⓜ️ Microsoft", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
   - { name: "🎬 YouTube", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|MO|JP|KR|SG|US)+(.*)$/] }
