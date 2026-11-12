@@ -10,6 +10,16 @@ log-level: debug
 external-controller: 127.0.0.1:9090
 skip-proxy: '127.0.0.1, 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, 100.64.0.0/10, 17.0.0.0/8, localhost, *.local, *.crashlytics.com'
 ipv6: true
+tun:
+  enable: false
+  stack: mixed
+  dns-hijack:
+    - any:53
+    - tcp://any:53
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: true
+  ipv6: true
 
 dns:
   enable: true
@@ -19,22 +29,22 @@ dns:
   fake-ip-range: 198.18.0.1/16
   use-hosts: true
   default-nameserver:
-    - 119.29.29.29
-    - 223.5.5.5
-    - 2001:4860:4860::8888
+    - 'tls://223.5.5.5:853'
+    - 'tls://1.12.12.12:853'
+  # 代理節點解析：不經 GLOBAL
   proxy-server-nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
+    - 'https://dns.alidns.com/dns-query#DIRECT'
+    - 'https://doh.pub/dns-query#DIRECT'
+  # 一般國外網域：經代理
+  nameserver:
+    - 'https://1.1.1.1/dns-query#GLOBAL'
+    - 'https://1.0.0.1/dns-query#GLOBAL'
+  # 國內網域：國內 DoH
   nameserver-policy:
     'geosite:cn':
-      - 223.5.5.5
-      - 119.29.29.29
-  nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-    - 2001:4860:4860::8888
-    - https://dns.google/dns-query
-    - https://cloudflare-dns.com/dns-query
+      - 'https://dns.alidns.com/dns-query#DIRECT'
+      - 'https://doh.pub/dns-query#DIRECT'
+  respect-rules: true
   fake-ip-filter:
     - '*.lan'
     - '*.edu.cn'
@@ -56,7 +66,7 @@ proxy-groups:
   - { name: "🔰 境外流量", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量"] }
   - { name: "🇨🇳 境内流量", type: select, proxies: ["DIRECT",/^(?=.*aaa)(?=.*bbb).*$/] }
   - { name: "♻️ Auto", type: fallback, proxies: [/^(.*)(TW|HK|MO|JP|KR|SG|US)+(.*)$/], url: "http://www.gstatic.com/generate_204", interval: 180 }
-  - { name: "🤖 AI", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|JP|KR|SG|US)+(.*)$/] }
+  - { name: "🤖 AI", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|JP|KR|SG|US|DE)+(.*)$/] }
   - { name: "🍎 Apple", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
   - { name: "Ⓜ️ Microsoft", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
   - { name: "🎬 YouTube", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|MO|JP|KR|SG|US)+(.*)$/] }

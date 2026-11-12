@@ -1,0 +1,57 @@
+port: 1087
+socks-port: 1080
+redir-port: 7892
+tproxy-port: 7893
+mixed-port: 7890
+allow-lan: true
+bind-address: "*"
+mode: rule
+log-level: debug
+external-controller: 127.0.0.1:9090
+skip-proxy: '127.0.0.1, 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, 100.64.0.0/10, 17.0.0.0/8, localhost, *.local, *.crashlytics.com'
+ipv6: true
+
+dns:
+  enable: true
+  ipv6: true
+  listen: '0.0.0.0:1053'
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  use-hosts: true
+  default-nameserver:
+    - 'https://1.1.1.1/dns-query'
+    - 'https://1.0.0.1/dns-query'
+  nameserver:
+    - 'https://223.5.5.5/dns-query'
+    - 'https://223.6.6.6/dns-query'
+    - 'https://dns.google/dns-query'
+  fake-ip-filter:
+    - '*.lan'
+    - '*.edu.cn'
+    - localhost.ptlogin2.qq.com
+    - '*.*.*.srv.nintendo.net'
+    - '*.*.stun.playstation.net'
+    - xbox.*.*.microsoft.com
+    - '*.*.xboxlive.com'
+    - '*.msftncsi.com'
+    - 'www.msftconnecttest.com'
+    - '+.x.com'
+    - '+.twitter.com'
+    - '+.twimg.com'
+    - '+.t.co'
+
+proxies:
+
+proxy-groups:
+  - { name: "🔰 境外流量", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量"] }
+  - { name: "🇨🇳 境内流量", type: select, proxies: ["DIRECT",/^(?=.*aaa)(?=.*bbb).*$/] }
+  - { name: "♻️ Auto", type: fallback, proxies: [/^(.*)(TW|HK|MO|JP|KR|SG|US)+(.*)$/], url: "http://www.gstatic.com/generate_204", interval: 180 }
+  - { name: "🤖 AI", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|JP|KR|SG|US|DE)+(.*)$/] }
+  - { name: "🍎 Apple", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
+  - { name: "Ⓜ️ Microsoft", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
+  - { name: "🎬 YouTube", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|MO|JP|KR|SG|US)+(.*)$/] }
+  - { name: "🎬 Netflix", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|JP|US)+(.*)$/] }
+  - { name: "🎬 Disney", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|JP|US)+(.*)$/] }
+  - { name: "🎬 BiliBili", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|MO)+(.*)$/] }
+
+rules:
