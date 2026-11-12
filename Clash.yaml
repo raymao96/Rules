@@ -1,4 +1,4 @@
-# 更新日期： 2026-09-05 13:33
+# 更新日期： 2026-11-12 17:45
 port: 1087
 socks-port: 1080
 redir-port: 7892
@@ -10,21 +10,42 @@ mode: rule
 log-level: debug
 external-controller: 127.0.0.1:9090
 skip-proxy: '127.0.0.1, 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, 100.64.0.0/10, 17.0.0.0/8, localhost, *.local, *.crashlytics.com'
+ipv6: true
+tun:
+  enable: false
+  stack: mixed
+  dns-hijack:
+    - any:53
+    - tcp://any:53
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: true
+  ipv6: true
 
 dns:
   enable: true
-  ipv6: false
+  ipv6: true
   listen: '0.0.0.0:1053'
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   use-hosts: true
   default-nameserver:
-    - 119.29.29.29
-    - 223.5.5.5
+    - 'tls://223.5.5.5:853'
+    - 'tls://1.12.12.12:853'
+  # 代理節點解析：不經 GLOBAL
+  proxy-server-nameserver:
+    - 'https://dns.alidns.com/dns-query#DIRECT'
+    - 'https://doh.pub/dns-query#DIRECT'
+  # 一般國外網域：經代理
   nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-    - https://dns.google/dns-query
+    - 'https://1.1.1.1/dns-query#GLOBAL'
+    - 'https://1.0.0.1/dns-query#GLOBAL'
+  # 國內網域：國內 DoH
+  nameserver-policy:
+    'geosite:cn':
+      - 'https://dns.alidns.com/dns-query#DIRECT'
+      - 'https://doh.pub/dns-query#DIRECT'
+  respect-rules: true
   fake-ip-filter:
     - '*.lan'
     - '*.edu.cn'
@@ -46,7 +67,7 @@ proxy-groups:
   - { name: "🔰 境外流量", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量"] }
   - { name: "🇨🇳 境内流量", type: select, proxies: ["DIRECT",/^(?=.*aaa)(?=.*bbb).*$/] }
   - { name: "♻️ Auto", type: fallback, proxies: [/^(.*)(TW|HK|MO|JP|KR|SG|US)+(.*)$/], url: "http://www.gstatic.com/generate_204", interval: 180 }
-  - { name: "🤖 AI", type: select, proxies: ["♻️ Auto",/^(.*)(TW|JP|KR|SG|US)+(.*)$/] }
+  - { name: "🤖 AI", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|JP|KR|SG|US|DE)+(.*)$/] }
   - { name: "🍎 Apple", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
   - { name: "Ⓜ️ Microsoft", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
   - { name: "🎬 YouTube", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|MO|JP|KR|SG|US)+(.*)$/] }
@@ -56,24 +77,42 @@ proxy-groups:
 
 rules:
 
-  # VPS
-  - DOMAIN-SUFFIX,my.yecaoyun.com,DIRECT
-
 
   # REJECT UDP 53
   - IP-CIDR,8.8.8.8/32,🔰 境外流量
   - IP-CIDR,8.8.4.4/32,🔰 境外流量
   - IP-CIDR,1.1.1.1/32,🔰 境外流量
   - IP-CIDR,1.0.0.1/32,🔰 境外流量
+  
+
+  # VPS
+  - DOMAIN-SUFFIX,my.yecaoyun.com,DIRECT
 
 
-  # Google Play
+  # Apple Podcast
+  - DOMAIN-SUFFIX,podcasts.apple.com,🍎 Apple
+  - DOMAIN-SUFFIX,itunes.apple.com,🍎 Apple
+  - DOMAIN-SUFFIX,pcr.apple.com,🍎 Apple
+  - DOMAIN-SUFFIX,amp-api.podcasts.apple.com,🍎 Apple
+  - DOMAIN,gateway.icloud.com,🍎 Apple
+  - DOMAIN-KEYWORD,audio-edge-,🍎 Apple
+  - DOMAIN-KEYWORD,podcasts,🍎 Apple
+
+
+  # Google Play & Youtube
 
   - DOMAIN-SUFFIX,services.googleapis.cn,🎬 YouTube
   - DOMAIN-SUFFIX,xn--ngstr-lra8j.com,DIRECT
   - DOMAIN-SUFFIX,clientservices.googleapis.com,🎬 YouTube
   - DOMAIN-SUFFIX,ggpht.com,🎬 YouTube
   - DOMAIN-KEYWORD,google,🎬 YouTube
+  
+
+  # AI Agent
+  - DOMAIN-SUFFIX,openrouter.ai,🤖 AI
+  - DOMAIN-SUFFIX,opencode.ai,🤖 AI
+  - DOMAIN-SUFFIX,pi.dev,🤖 AI
+  - DOMAIN-SUFFIX,pi-web.dev,🤖 AI
 
 
   # Wechat.com
@@ -172,6 +211,10 @@ rules:
   - DOMAIN-SUFFIX,adobe.io,REJECT
   - DOMAIN-SUFFIX,adobestats.io,REJECT
   - DOMAIN,lcs-cops.adobe.io,DIRECT
+  - DOMAIN-KEYWORD,gvt2,🎬 YouTube
+  - DOMAIN-SUFFIX,doubleclick.net,🎬 YouTube
+  - DOMAIN-SUFFIX,googleadservices.com,🎬 YouTube
+  - DOMAIN-SUFFIX,googlesyndication.com,🎬 YouTube
   - DOMAIN-SUFFIX,bahamut.com.tw,🔰 境外流量
   - DOMAIN-SUFFIX,gamer.com.tw,🔰 境外流量
   - DOMAIN,gamer-cds.cdn.hinet.net,🔰 境外流量
@@ -199,7 +242,7 @@ rules:
   - DOMAIN-SUFFIX,getupnote.com,🔰 境外流量
   - DOMAIN-SUFFIX,discordapp.net,🔰 境外流量
   - DOMAIN-SUFFIX,discord.com,🔰 境外流量
-  - DOMAIN-SUFFIX,discord.gg,🔰 境外流
+  - DOMAIN-SUFFIX,discord.gg,🔰 境外流量
   - DOMAIN-SUFFIX,missav.com,🔰 境外流量
   - DOMAIN-SUFFIX,missav.ws,🔰 境外流量
   - DOMAIN-SUFFIX,missav.ai,🔰 境外流量
@@ -226,38 +269,73 @@ rules:
 
   # Direct
   - DOMAIN-SUFFIX,abchina.com,DIRECT
-  - DOMAIN-SUFFIX,abchina.com.cn,DIRECT
-  - DOMAIN-SUFFIX,boc.cn,DIRECT
   - DOMAIN-SUFFIX,citicbank.com,DIRECT
   - DOMAIN-SUFFIX,ecitic.com,DIRECT
   - DOMAIN-SUFFIX,ecitic.net,DIRECT
   - DOMAIN-SUFFIX,ccb.com,DIRECT
-  - DOMAIN-SUFFIX,ccb.com.cn,DIRECT
   - DOMAIN-SUFFIX,cebbank.com,DIRECT
   - DOMAIN-SUFFIX,cmbchina.com,DIRECT
   - DOMAIN-SUFFIX,cmbimg.com,DIRECT
-  - DOMAIN-SUFFIX,cmbt.cn,DIRECT
   - DOMAIN-SUFFIX,mbcloud.com,DIRECT
-  - DOMAIN-SUFFIX,icbc.com.cn,DIRECT
-  - DOMAIN-SUFFIX,pingan.com,DIRECT
-  - DOMAIN-SUFFIX,pingan.com.cn,DIRECT
-  - DOMAIN-KEYWORD,beplay,DIRECT
-  - DOMAIN,client.amplifi.com,DIRECT
-  - DOMAIN,ip.bjango.com,DIRECT
-  - DOMAIN-SUFFIX,alphassl.com,DIRECT
-  - DOMAIN-SUFFIX,edu.cn,DIRECT
-  - DOMAIN-SUFFIX,p4pfile.com,DIRECT
-  - DOMAIN-SUFFIX,zmzfile.com,DIRECT
-  - DOMAIN-SUFFIX,sony.com,DIRECT
-  - DOMAIN-SUFFIX,sonyentertainmentnetwork.com,DIRECT
+  - DOMAIN-SUFFIX,cn,DIRECT
+  - DOMAIN,p-aweme-im-img-sign.bytedance.net,DIRECT
+  - DOMAIN,v5-dy-o-abtest.zjcdn.com,DIRECT
+  - DOMAIN-SUFFIX,amemv.com,DIRECT
+  - DOMAIN-SUFFIX,byted-static.com,DIRECT
+  - DOMAIN-SUFFIX,bytednsdoc.com,DIRECT
+  - DOMAIN-SUFFIX,bytegecko.com,DIRECT
+  - DOMAIN-SUFFIX,bytegoofy.com,DIRECT
+  - DOMAIN-SUFFIX,bytehwm.com,DIRECT
+  - DOMAIN-SUFFIX,byteimg.com,DIRECT
+  - DOMAIN-SUFFIX,bytescm.com,DIRECT
+  - DOMAIN-SUFFIX,bytetcc.com,DIRECT
+  - DOMAIN-SUFFIX,bytetos.com,DIRECT
+  - DOMAIN-SUFFIX,douyin.com,DIRECT
+  - DOMAIN-SUFFIX,douyincdn.com,DIRECT
+  - DOMAIN-SUFFIX,douyinfe.com,DIRECT
+  - DOMAIN-SUFFIX,douyinliving.com,DIRECT
+  - DOMAIN-SUFFIX,douyinpic.com,DIRECT
+  - DOMAIN-SUFFIX,douyinstatic.com,DIRECT
+  - DOMAIN-SUFFIX,douyinvod.com,DIRECT
+  - DOMAIN-SUFFIX,huoshancdn.com,DIRECT
+  - DOMAIN-SUFFIX,huoshanimg.com,DIRECT
+  - DOMAIN-SUFFIX,huoshanlive.com,DIRECT
+  - DOMAIN-SUFFIX,huoshanstatic.com,DIRECT
+  - DOMAIN-SUFFIX,huoshanvod.com,DIRECT
+  - DOMAIN-SUFFIX,hypercachenode.com,DIRECT
+  - DOMAIN-SUFFIX,ibytedapm.com,DIRECT
+  - DOMAIN-SUFFIX,idouyinliving.com,DIRECT
+  - DOMAIN-SUFFIX,idouyinpic.com,DIRECT
+  - DOMAIN-SUFFIX,idouyinstatic.com,DIRECT
+  - DOMAIN-SUFFIX,idouyinvod.com,DIRECT
+  - DOMAIN-SUFFIX,iesdouyin.com,DIRECT
+  - DOMAIN-SUFFIX,iesdouyin.net,DIRECT
+  - DOMAIN-SUFFIX,ihuoshanimg.com,DIRECT
+  - DOMAIN-SUFFIX,ihuoshanlive.com,DIRECT
+  - DOMAIN-SUFFIX,ihuoshanstatic.com,DIRECT
+  - DOMAIN-SUFFIX,ihuoshanvod.com,DIRECT
+  - DOMAIN-SUFFIX,ixigua.com,DIRECT
+  - DOMAIN-SUFFIX,ixiguavideo.com,DIRECT
+  - DOMAIN-SUFFIX,pstatp.com,DIRECT
+  - DOMAIN-SUFFIX,snssdk.com,DIRECT
+  - DOMAIN-SUFFIX,supercachenet.com,DIRECT
+  - DOMAIN-SUFFIX,supercachenode.com,DIRECT
+  - DOMAIN-SUFFIX,toutiao.com,DIRECT
+  - DOMAIN-SUFFIX,ultracachenode.com,DIRECT
+  - DOMAIN-SUFFIX,yhgfb-cn-static.com,DIRECT
+  - DOMAIN-SUFFIX,zijieapi.com,DIRECT
+  - DOMAIN-SUFFIX,aweray.com,DIRECT
+  - DOMAIN-SUFFIX,oray.com,DIRECT
+  - DOMAIN-SUFFIX,oray.net,DIRECT
+  - DOMAIN-SUFFIX,sunlogin.net,DIRECT
+  - DOMAIN-SUFFIX,volcengine.com,DIRECT
+  - DOMAIN-SUFFIX,volcengineapi.com,DIRECT
+  - DOMAIN-SUFFIX,volces.com,DIRECT
   - DOMAIN-SUFFIX,10010.com,DIRECT
-  - DOMAIN-SUFFIX,10086.cn,DIRECT
-  - DOMAIN-SUFFIX,12306.cn,DIRECT
   - DOMAIN-SUFFIX,12306.com,DIRECT
+  - DOMAIN-SUFFIX,123pan.com,DIRECT
   - DOMAIN-SUFFIX,126.net,DIRECT
   - DOMAIN-SUFFIX,163.com,DIRECT
-  - DOMAIN-SUFFIX,189.cn,DIRECT
-  - DOMAIN-SUFFIX,360.cn,DIRECT
   - DOMAIN-SUFFIX,360.com,DIRECT
   - DOMAIN-SUFFIX,360buy.com,DIRECT
   - DOMAIN-SUFFIX,360buyimg.com,DIRECT
@@ -270,6 +348,7 @@ rules:
   - DOMAIN-SUFFIX,acfun.tv,DIRECT
   - DOMAIN-SUFFIX,adobesc.com,DIRECT
   - DOMAIN-SUFFIX,aiaa.org,DIRECT
+  - DOMAIN-SUFFIX,aiqicha.com,DIRECT
   - DOMAIN-SUFFIX,air-matters.com,DIRECT
   - DOMAIN-SUFFIX,air-matters.io,DIRECT
   - DOMAIN-SUFFIX,aixifan.com,DIRECT
@@ -291,6 +370,7 @@ rules:
   - DOMAIN-SUFFIX,bdstatic.com,DIRECT
   - DOMAIN-SUFFIX,beatsbydre.com,DIRECT
   - DOMAIN-SUFFIX,bochk.com,DIRECT
+  - DOMAIN-SUFFIX,broadcasthe.net,DIRECT
   - DOMAIN-SUFFIX,caiyunapp.com,DIRECT
   - DOMAIN-SUFFIX,ccgslb.com,DIRECT
   - DOMAIN-SUFFIX,ccgslb.net,DIRECT
@@ -300,18 +380,22 @@ rules:
   - DOMAIN-SUFFIX,chunboimg.com,DIRECT
   - DOMAIN-SUFFIX,clouddn.com,DIRECT
   - DOMAIN-SUFFIX,cloudsigma.com,DIRECT
-  - DOMAIN-SUFFIX,cloudxns.net,DIRECT
   - DOMAIN-SUFFIX,cmct.tv,DIRECT
   - DOMAIN-SUFFIX,cmfu.com,DIRECT
   - DOMAIN-SUFFIX,cnlang.org,DIRECT
   - DOMAIN-SUFFIX,coolapk.com,DIRECT
   - DOMAIN-SUFFIX,cz88.net,DIRECT
   - DOMAIN-SUFFIX,dct-cloud.com,DIRECT
+  - DOMAIN-SUFFIX,deepseek.com,DIRECT
   - DOMAIN-SUFFIX,didialift.com,DIRECT
   - DOMAIN-SUFFIX,digicert.com,DIRECT
+  - DOMAIN-SUFFIX,dingtalk.com,DIRECT
+  - DOMAIN-SUFFIX,dingtalk.net,DIRECT
+  - DOMAIN-SUFFIX,dingtalkapps.com,DIRECT
+  - DOMAIN-SUFFIX,dingtalkcloud.com,DIRECT
   - DOMAIN-SUFFIX,douban.com,DIRECT
   - DOMAIN-SUFFIX,doubanio.com,DIRECT
-  - DOMAIN-SUFFIX,douyin.com,DIRECT
+  - DOMAIN-SUFFIX,doubao.com,DIRECT
   - DOMAIN-SUFFIX,douyu.com,DIRECT
   - DOMAIN-SUFFIX,douyu.tv,DIRECT
   - DOMAIN-SUFFIX,douyutv.com,DIRECT
@@ -321,12 +405,15 @@ rules:
   - DOMAIN-SUFFIX,easou.com,DIRECT
   - DOMAIN-SUFFIX,eudic.net,DIRECT
   - DOMAIN-SUFFIX,ewqcxz.com,DIRECT
+  - DOMAIN-SUFFIX,feishuapp.com,DIRECT
+  - DOMAIN-SUFFIX,feishucdn.com,DIRECT
+  - DOMAIN-SUFFIX,feishudoc.com,DIRECT
+  - DOMAIN-SUFFIX,feishuimg.com,DIRECT
   - DOMAIN-SUFFIX,feng.com,DIRECT
   - DOMAIN-SUFFIX,fir.im,DIRECT
   - DOMAIN-SUFFIX,frdic.com,DIRECT
   - DOMAIN-SUFFIX,fresh-ideas.cc,DIRECT
   - DOMAIN-SUFFIX,gameloft.com,DIRECT
-  - DOMAIN-SUFFIX,garmin.cn,DIRECT
   - DOMAIN-SUFFIX,geetest.com,DIRECT
   - DOMAIN-SUFFIX,godic.net,DIRECT
   - DOMAIN-SUFFIX,goodread.com,DIRECT
@@ -337,7 +424,6 @@ rules:
   - DOMAIN-SUFFIX,haosou.com,DIRECT
   - DOMAIN-SUFFIX,hdchina.org,DIRECT
   - DOMAIN-SUFFIX,hdcmct.org,DIRECT
-  - DOMAIN-SUFFIX,hjfile.cn,DIRECT
   - DOMAIN-SUFFIX,hkserversolution.com,DIRECT
   - DOMAIN-SUFFIX,hollisterco.com,DIRECT
   - DOMAIN-SUFFIX,hongxiu.com,DIRECT
@@ -354,12 +440,13 @@ rules:
   - DOMAIN-SUFFIX,ixdzs.com,DIRECT
   - DOMAIN-SUFFIX,jd.com,DIRECT
   - DOMAIN-SUFFIX,jd.hk,DIRECT
+  - DOMAIN-SUFFIX,jianguoyun.com,DIRECT
   - DOMAIN-SUFFIX,jianshu.com,DIRECT
   - DOMAIN-SUFFIX,jianshu.io,DIRECT
   - DOMAIN-SUFFIX,jianshuapi.com,DIRECT
-  - DOMAIN-SUFFIX,jiathis.com,DIRECT
   - DOMAIN-SUFFIX,jomodns.com,DIRECT
   - DOMAIN-SUFFIX,jsboxbbs.com,DIRECT
+  - DOMAIN-SUFFIX,kimi.com,DIRECT
   - DOMAIN-SUFFIX,knewone.com,DIRECT
   - DOMAIN-SUFFIX,kuaidi100.com,DIRECT
   - DOMAIN-SUFFIX,kugou.com,DIRECT
@@ -391,18 +478,24 @@ rules:
   - DOMAIN-SUFFIX,netease.com,DIRECT
   - DOMAIN-SUFFIX,nfoservers.com,DIRECT
   - DOMAIN-SUFFIX,ngabbs.com,DIRECT
+  - DOMAIN-SUFFIX,nlark.com,DIRECT
   - DOMAIN-SUFFIX,nuomi.com,DIRECT
   - DOMAIN-SUFFIX,ourbits.club,DIRECT
   - DOMAIN-SUFFIX,ourdvs.com,DIRECT
   - DOMAIN-SUFFIX,passthepopcorn.me,DIRECT
+  - DOMAIN-SUFFIX,pddcdn.com,DIRECT
+  - DOMAIN-SUFFIX,pddpic.com,DIRECT
   - DOMAIN-SUFFIX,pgyer.com,DIRECT
+  - DOMAIN-SUFFIX,pinduoduo.com,DIRECT
   - DOMAIN-SUFFIX,pniao.com,DIRECT
   - DOMAIN-SUFFIX,privatehd.to,DIRECT
   - DOMAIN-SUFFIX,qbox.me,DIRECT
+  - DOMAIN-SUFFIX,qcc.com,DIRECT
   - DOMAIN-SUFFIX,qcloud.com,DIRECT
   - DOMAIN-SUFFIX,qdaily.com,DIRECT
   - DOMAIN-SUFFIX,qdmm.com,DIRECT
   - DOMAIN-SUFFIX,qhimg.com,DIRECT
+  - DOMAIN-SUFFIX,qichacha.com,DIRECT
   - DOMAIN-SUFFIX,qidian.com,DIRECT
   - DOMAIN-SUFFIX,qihucdn.com,DIRECT
   - DOMAIN-SUFFIX,qin.io,DIRECT
@@ -414,14 +507,17 @@ rules:
   - DOMAIN-SUFFIX,qq.net,DIRECT
   - DOMAIN-SUFFIX,qqmail.com,DIRECT
   - DOMAIN-SUFFIX,qqurl.com,DIRECT
-  - DOMAIN-SUFFIX,rarbg.to,DIRECT
   - DOMAIN-SUFFIX,redacted.ch,DIRECT
+  - DOMAIN-SUFFIX,rednotecdn.com,DIRECT
+  - DOMAIN-SUFFIX,rnote.com,DIRECT
   - DOMAIN-SUFFIX,rrmj.tv,DIRECT
   - DOMAIN-SUFFIX,ruguoapp.com,DIRECT
+  - DOMAIN-SUFFIX,sdo.com,DIRECT
   - DOMAIN-SUFFIX,servicewechat.com,DIRECT
   - DOMAIN-SUFFIX,sf-express.com,DIRECT
+  - DOMAIN-SUFFIX,shimo.im,DIRECT
+  - DOMAIN-SUFFIX,shimonote.com,DIRECT
   - DOMAIN-SUFFIX,sinaapp.com,DIRECT
-  - DOMAIN-SUFFIX,sinaimg.cn,DIRECT
   - DOMAIN-SUFFIX,sinaimg.com,DIRECT
   - DOMAIN-SUFFIX,smzdm.com,DIRECT
   - DOMAIN-SUFFIX,snwx.com,DIRECT
@@ -432,22 +528,17 @@ rules:
   - DOMAIN-SUFFIX,soku.com,DIRECT
   - DOMAIN-SUFFIX,soso.com,DIRECT
   - DOMAIN-SUFFIX,sspai.com,DIRECT
-  - DOMAIN-SUFFIX,startssl.com,DIRECT
   - DOMAIN-SUFFIX,suning.com,DIRECT
-  - DOMAIN-SUFFIX,symcd.com,DIRECT
   - DOMAIN-SUFFIX,taobao.com,DIRECT
   - DOMAIN-SUFFIX,tawk.link,DIRECT
   - DOMAIN-SUFFIX,tawk.to,DIRECT
   - DOMAIN-SUFFIX,tencent-cloud.net,DIRECT
   - DOMAIN-SUFFIX,tencent.com,DIRECT
   - DOMAIN-SUFFIX,tenpay.com,DIRECT
-  - DOMAIN-SUFFIX,tenpay.com,DIRECT
   - DOMAIN-SUFFIX,tietuku.com,DIRECT
   - DOMAIN-SUFFIX,tmall.com,DIRECT
   - DOMAIN-SUFFIX,tmzvps.com,DIRECT
   - DOMAIN-SUFFIX,totheglory.im,DIRECT
-  - DOMAIN-SUFFIX,trello.com,DIRECT
-  - DOMAIN-SUFFIX,trellocdn.com,DIRECT
   - DOMAIN-SUFFIX,ttmeiju.com,DIRECT
   - DOMAIN-SUFFIX,tudou.com,DIRECT
   - DOMAIN-SUFFIX,udache.com,DIRECT
@@ -459,16 +550,16 @@ rules:
   - DOMAIN-SUFFIX,weather.bjango.com,DIRECT
   - DOMAIN-SUFFIX,webqxs.com,DIRECT
   - DOMAIN-SUFFIX,wechat.com,DIRECT
-  - DOMAIN-SUFFIX,wechat.com,DIRECT
-  - DOMAIN-SUFFIX,weibo.cn,DIRECT
   - DOMAIN-SUFFIX,weibo.com,DIRECT
   - DOMAIN-SUFFIX,weico.cc,DIRECT
   - DOMAIN-SUFFIX,weiphone.com,DIRECT
   - DOMAIN-SUFFIX,weiphone.net,DIRECT
   - DOMAIN-SUFFIX,weixinbridge.com,DIRECT
+  - DOMAIN-SUFFIX,weiyun.com,DIRECT
   - DOMAIN-SUFFIX,werewolf.53site.com,DIRECT
   - DOMAIN-SUFFIX,wkcdn.com,DIRECT
-  - DOMAIN-SUFFIX,xdrig.com,DIRECT
+  - DOMAIN-SUFFIX,wps.com,DIRECT
+  - DOMAIN-SUFFIX,wpscdn.com,DIRECT
   - DOMAIN-SUFFIX,xhostfire.com,DIRECT
   - DOMAIN-SUFFIX,xhscdn.com,DIRECT
   - DOMAIN-SUFFIX,xiaohongshu.com,DIRECT
@@ -481,25 +572,42 @@ rules:
   - DOMAIN-SUFFIX,xmcdn.com,DIRECT
   - DOMAIN-SUFFIX,xslb.net,DIRECT
   - DOMAIN-SUFFIX,yach.me,DIRECT
+  - DOMAIN-SUFFIX,yangkeduo.com,DIRECT
   - DOMAIN-SUFFIX,yeepay.com,DIRECT
   - DOMAIN-SUFFIX,yhd.com,DIRECT
   - DOMAIN-SUFFIX,yinxiang.com,DIRECT
   - DOMAIN-SUFFIX,yixia.com,DIRECT
   - DOMAIN-SUFFIX,ykimg.com,DIRECT
   - DOMAIN-SUFFIX,youdao.com,DIRECT
-  - DOMAIN-SUFFIX,ysepay.cn,DIRECT
   - DOMAIN-SUFFIX,ysepay.com,DIRECT
   - DOMAIN-SUFFIX,yunjiasu-cdn.net,DIRECT
+  - DOMAIN-SUFFIX,yuque.com,DIRECT
   - DOMAIN-SUFFIX,zealer.com,DIRECT
   - DOMAIN-SUFFIX,zgslb.net,DIRECT
   - DOMAIN-SUFFIX,zhihu.com,DIRECT
   - DOMAIN-SUFFIX,zhimg.com,DIRECT
   - DOMAIN-SUFFIX,zimuzu.tv,DIRECT
   - DOMAIN-SUFFIX,zmz002.com,DIRECT
-  - DOMAIN-SUFFIX,gov.cn,DIRECT
-  - DOMAIN-SUFFIX,cn,DIRECT
+  - DOMAIN-SUFFIX,pingan.com,DIRECT
+  - DOMAIN-SUFFIX,alphassl.com,DIRECT
+  - DOMAIN,client.amplifi.com,DIRECT
+  - DOMAIN,ip.bjango.com,DIRECT
+  - DOMAIN-SUFFIX,raylink.live,DIRECT
+  - DOMAIN-SUFFIX,p4pfile.com,DIRECT
+  - DOMAIN-SUFFIX,zmzfile.com,DIRECT
+  - DOMAIN-SUFFIX,sony.com,DIRECT
+  - DOMAIN-SUFFIX,sonyentertainmentnetwork.com,DIRECT
+  - DOMAIN-SUFFIX,todesk.com,DIRECT
 
   - DOMAIN-SUFFIX,local,DIRECT
+  - IP-CIDR,10.0.0.0/8,DIRECT
+  - IP-CIDR,100.64.0.0/10,DIRECT
+  - IP-CIDR,127.0.0.0/8,DIRECT
+  - IP-CIDR,172.16.0.0/12,DIRECT
+  - IP-CIDR,192.168.0.0/16,DIRECT
+  - IP-CIDR6,::1/128,DIRECT
+  - IP-CIDR6,fc00::/7,DIRECT
+  - IP-CIDR6,fe80::/10,DIRECT
 
   - DOMAIN,apd-pcdnwxlogin.teg.tencent-cloud.net,DIRECT
   - DOMAIN,btrace.qq.com,DIRECT
@@ -1109,6 +1217,12 @@ rules:
   - DOMAIN-SUFFIX,secec.com,DIRECT
   - DOMAIN-SUFFIX,sunlife-everbright.com,DIRECT
 
+  - DOMAIN-SUFFIX,95559.com.cn,DIRECT
+  - DOMAIN-SUFFIX,95559.sh.cn,DIRECT
+  - DOMAIN-SUFFIX,bankcomm.com,DIRECT
+  - DOMAIN-SUFFIX,bankcomm.com.au,DIRECT
+  - DOMAIN-SUFFIX,bankcomm.com.mo,DIRECT
+  - DOMAIN-SUFFIX,bankcomm.com.tw,DIRECT
 
   - DOMAIN-SUFFIX,01058511989.com,DIRECT
   - DOMAIN-SUFFIX,10000.gd.cn,DIRECT
@@ -1241,10 +1355,12 @@ rules:
   - DOMAIN-SUFFIX,cmccb2b.com,DIRECT
   - DOMAIN-SUFFIX,cmdcl.cn,DIRECT
   - DOMAIN-SUFFIX,cmdcxls.com,DIRECT
+  - DOMAIN-SUFFIX,cmecloud.cn,DIRECT
   - DOMAIN-SUFFIX,cmicrwx.cn,DIRECT
   - DOMAIN-SUFFIX,cmpassport.com,DIRECT
   - DOMAIN-SUFFIX,cmvideo.cn,DIRECT
   - DOMAIN-SUFFIX,cxzx10086.cn,DIRECT
+  - DOMAIN-SUFFIX,ecpan.cn,DIRECT
   - DOMAIN-SUFFIX,fetion-portal.com,DIRECT
   - DOMAIN-SUFFIX,fetionpic.com,DIRECT
   - DOMAIN-SUFFIX,fxltsbl.com,DIRECT
@@ -1284,128 +1400,515 @@ rules:
   - DOMAIN-SUFFIX,pdl.wow.battlenet.com.cn,DIRECT
 
   # AI
+  - DOMAIN,apple-relay.apple.com,🤖 AI
+  - DOMAIN,apple-relay.cloudflare.com,🤖 AI
+  - DOMAIN,apple-relay.fastly-edge.com,🤖 AI
+  - DOMAIN,apple-relay.mask.apple-dns.net,🤖 AI
+  - DOMAIN,cp4.cloudflare.com,🤖 AI
+  - DOMAIN,gspe1-ssl.ls.apple.com,🤖 AI
   - DOMAIN-SUFFIX,augment.com,🤖 AI
   - DOMAIN-SUFFIX,augmentcode.com,🤖 AI
-  - DOMAIN-SUFFIX,ai.com,🤖 AI
+  - DOMAIN-SUFFIX,cerebras.ai,🤖 AI
+  - DOMAIN-SUFFIX,chat.com,🤖 AI
   - DOMAIN-SUFFIX,chatgpt.com,🤖 AI
-  - DOMAIN-SUFFIX,ct.sendgrid.net,🤖 AI
-  - DOMAIN-SUFFIX,featureassets.org,🤖 AI
-  - DOMAIN-SUFFIX,featuregates.org,🤖 AI
-  - DOMAIN-SUFFIX,intercom.io,🤖 AI
-  - DOMAIN-SUFFIX,intercomcdn.com,🤖 AI
   - DOMAIN-SUFFIX,oaistatic.com,🤖 AI
+  - DOMAIN-SUFFIX,oaistatsig.com,🤖 AI
   - DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI
   - DOMAIN-SUFFIX,openai.com,🤖 AI
-  - DOMAIN-SUFFIX,prodregistryv2.org,🤖 AI
-  - DOMAIN-SUFFIX,statsig.com,🤖 AI
-  - DOMAIN-SUFFIX,statsigapi.net,🤖 AI
   - DOMAIN,cdn.openaimerge.com,🤖 AI
-  - DOMAIN,cdn.workos.com,🤖 AI
-  - DOMAIN,challenges.cloudflare.com,🤖 AI
   - DOMAIN,chat.openai.com.cdn.cloudflare.net,🤖 AI
-  - DOMAIN,forwarder.workos.com,🤖 AI
-  - DOMAIN,humb.apple.com,🤖 AI
-  - DOMAIN,images.workoscdn.com,🤖 AI
-  - DOMAIN,js.stripe.com,🤖 AI
-  - DOMAIN,o207216.ingest.sentry.io,🤖 AI
-  - DOMAIN,o33249.ingest.sentry.io,🤖 AI
   - DOMAIN,openaiapi-site.azureedge.net,🤖 AI
   - DOMAIN,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net,🤖 AI
   - DOMAIN,openaicomproductionae4b.blob.core.windows.net,🤖 AI
   - DOMAIN,production-openaicom-storage.azureedge.net,🤖 AI
+  - DOMAIN,cdn.workos.com,🤖 AI
+  - DOMAIN,challenges.cloudflare.com,🤖 AI
+  - DOMAIN-SUFFIX,ct.sendgrid.net,🤖 AI
+  - DOMAIN,forwarder.workos.com,🤖 AI
+  - DOMAIN,humb.apple.com,🤖 AI
+  - DOMAIN,images.workoscdn.com,🤖 AI
+  - DOMAIN-SUFFIX,intercom.io,🤖 AI
+  - DOMAIN-SUFFIX,intercomcdn.com,🤖 AI
+  - DOMAIN,js.stripe.com,🤖 AI
+  - DOMAIN,o207216.ingest.sentry.io,🤖 AI
+  - DOMAIN,o33249.ingest.sentry.io,🤖 AI
   - DOMAIN,rum.browser-intake-datadoghq.com,🤖 AI
   - DOMAIN,setup.workos.com,🤖 AI
   - DOMAIN,workos.imgix.net,🤖 AI
-  - DOMAIN-SUFFIX,cerebras.ai,🤖 AI
   - DOMAIN-SUFFIX,chorus.sh,🤖 AI
   - DOMAIN-SUFFIX,anthropic.com,🤖 AI
+  - DOMAIN-SUFFIX,clau.de,🤖 AI
   - DOMAIN-SUFFIX,claude.ai,🤖 AI
   - DOMAIN-SUFFIX,claude.com,🤖 AI
   - DOMAIN-SUFFIX,claudeusercontent.com,🤖 AI
   - DOMAIN,gateway.ai.cloudflare.com,🤖 AI
-  - DOMAIN-SUFFIX,githubcopilot.com,🤖 AI
-  - DOMAIN-SUFFIX,microsoftonline.com,🤖 AI
-  - DOMAIN,copilot.microsoft.com,🤖 AI
+  - DOMAIN-SUFFIX,cohere.ai,🤖 AI
+  - DOMAIN-SUFFIX,cohere.com,🤖 AI
+  - DOMAIN,anysphere-binaries.s3.us-east-1.amazonaws.com,🤖 AI
+  - DOMAIN-SUFFIX,cursor-cdn.com,🤖 AI
+  - DOMAIN-SUFFIX,cursor.com,🤖 AI
   - DOMAIN-SUFFIX,cursor.sh,🤖 AI
+  - DOMAIN-SUFFIX,cursorapi.com,🤖 AI
+  - DOMAIN-SUFFIX,cursorvm.com,🤖 AI
+  - DOMAIN,accounts.spacex.ai,🤖 AI
+  - DOMAIN-SUFFIX,diabrowser.com,🤖 AI
   - DOMAIN-SUFFIX,diabrowser.engineering,🤖 AI
   - DOMAIN-SUFFIX,dify.ai,🤖 AI
+  - DOMAIN-SUFFIX,udify.app,🤖 AI
+  - DOMAIN,copilot-proxy.githubusercontent.com,🤖 AI
+  - DOMAIN,copilot-reports.github.com,🤖 AI
+  - DOMAIN,copilot-telemetry.githubusercontent.com,🤖 AI
+  - DOMAIN,default.exp-tas.com,🤖 AI
+  - DOMAIN-SUFFIX,githubcopilot.com,🤖 AI
+  - DOMAIN,origin-tracker.githubusercontent.com,🤖 AI
   - DOMAIN,api.github.com,🤖 AI
-  - DOMAIN-KEYWORD,alkalimakersuite-pa.clients6.google.com,🤖 AI
-  - DOMAIN-SUFFIX,aistudio.google.com,🤖 AI
-  - DOMAIN-SUFFIX,makersuite.google.com,🤖 AI
-  - DOMAIN-SUFFIX,generativeai.google,🤖 AI
   - DOMAIN,ai.google.dev,🤖 AI
+  - DOMAIN-SUFFIX,aistudio.google.com,🤖 AI
   - DOMAIN,alkalicore-pa.clients6.google.com,🤖 AI
+  - DOMAIN,alkalimakersuite-pa.clients6.google.com,🤖 AI
+  - DOMAIN-SUFFIX,generativeai.google,🤖 AI
+  - DOMAIN-SUFFIX,makersuite.google.com,🤖 AI
   - DOMAIN,waa-pa.clients6.google.com,🤖 AI
+  - DOMAIN-SUFFIX,antigravity.google,🤖 AI
+  - DOMAIN-SUFFIX,antigravity.google.com,🤖 AI
+  - DOMAIN,cloudcode-pa.googleapis.com,🤖 AI
+  - DOMAIN,daily-cloudcode-pa.googleapis.com,🤖 AI
+  - DOMAIN,daily-cloudcode-pa.sandbox.googleapis.com,🤖 AI
+  - DOMAIN,aiplatform.eu.rep.googleapis.com,🤖 AI
+  - DOMAIN,aiplatform.googleapis.com,🤖 AI
+  - DOMAIN,aiplatform.mtls.googleapis.com,🤖 AI
+  - DOMAIN,aiplatform.us.rep.googleapis.com,🤖 AI
+  - DOMAIN,businessaicode.eu.rep.googleapis.com,🤖 AI
+  - DOMAIN,businessaicode.googleapis.com,🤖 AI
+  - DOMAIN,businessaicode.mtls.googleapis.com,🤖 AI
+  - DOMAIN,businessaicode.us.rep.googleapis.com,🤖 AI
+  - DOMAIN,discoveryengine.googleapis.com,🤖 AI
+  - DOMAIN,discoveryengine.mtls.googleapis.com,🤖 AI
+  - DOMAIN,eu-discoveryengine.googleapis.com,🤖 AI
+  - DOMAIN,eu-discoveryengine.mtls.googleapis.com,🤖 AI
+  - DOMAIN,us-discoveryengine.googleapis.com,🤖 AI
+  - DOMAIN,us-discoveryengine.mtls.googleapis.com,🤖 AI
+  - DOMAIN,aida.googleapis.com,🤖 AI
   - DOMAIN-SUFFIX,deepmind.com,🤖 AI
   - DOMAIN-SUFFIX,deepmind.google,🤖 AI
-  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,🤖 AI
-  - DOMAIN-SUFFIX,geller-pa.googleapis.com,🤖 AI
-  - DOMAIN-SUFFIX,proactivebackend-pa.googleapis.com,🤖 AI
   - DOMAIN-SUFFIX,aisandbox-pa.googleapis.com,🤖 AI
-  - DOMAIN-SUFFIX,apis.google.com,🤖 AI
   - DOMAIN-SUFFIX,bard.google.com,🤖 AI
   - DOMAIN-SUFFIX,gemini.google,🤖 AI
   - DOMAIN-SUFFIX,gemini.google.com,🤖 AI
   - DOMAIN-SUFFIX,robinfrontend-pa.googleapis.com,🤖 AI
+  - DOMAIN-SUFFIX,notebook.google,🤖 AI
+  - DOMAIN-SUFFIX,notebook.google.com,🤖 AI
+  - DOMAIN-SUFFIX,notebooklm.cloud.google.com,🤖 AI
   - DOMAIN-SUFFIX,notebooklm.google,🤖 AI
   - DOMAIN-SUFFIX,notebooklm.google.com,🤖 AI
-  - DOMAIN-SUFFIX,x.ai,🤖 AI
-  - DOMAIN-SUFFIX,grok.com,🤖 AI
+  - DOMAIN,apis.google.com,🤖 AI
+  - DOMAIN,content-autofill.googleapis.com,🤖 AI
+  - DOMAIN,csp.withgoogle.com,🤖 AI
+  - DOMAIN,encrypted-tbn0.gstatic.com,🤖 AI
+  - DOMAIN,encrypted-tbn1.gstatic.com,🤖 AI
+  - DOMAIN,encrypted-tbn2.gstatic.com,🤖 AI
+  - DOMAIN,encrypted-tbn3.gstatic.com,🤖 AI
+  - DOMAIN,fonts.googleapis.com,🤖 AI
+  - DOMAIN,fonts.gstatic.com,🤖 AI
+  - DOMAIN,jnn-pa.googleapis.com,🤖 AI
+  - DOMAIN,lh3.google.com,🤖 AI
+  - DOMAIN,lh3.googleusercontent.com,🤖 AI
+  - DOMAIN,lh5.googleusercontent.com,🤖 AI
+  - DOMAIN,maps.googleapis.com,🤖 AI
+  - DOMAIN,maps.gstatic.com,🤖 AI
+  - DOMAIN,ogs.google.com,🤖 AI
+  - DOMAIN,optimizationguide-pa.googleapis.com,🤖 AI
+  - DOMAIN,play.google.com,🤖 AI
+  - DOMAIN,ssl.gstatic.com,🤖 AI
+  - DOMAIN,streetviewpixels-pa.googleapis.com,🤖 AI
+  - DOMAIN-SUFFIX,geller-pa.googleapis.com,🤖 AI
+  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,🤖 AI
+  - DOMAIN-SUFFIX,proactivebackend-pa.googleapis.com,🤖 AI
+  - DOMAIN-SUFFIX,jules.google,🤖 AI
+  - DOMAIN-SUFFIX,jules.google.com,🤖 AI
+  - DOMAIN,jules.googleapis.com,🤖 AI
+  - DOMAIN,labs.google,🤖 AI
+  - DOMAIN,appcatalyst.pa.googleapis.com,🤖 AI
+  - DOMAIN-SUFFIX,opal.goog,🤖 AI
+  - DOMAIN-SUFFIX,opal.google,🤖 AI
+  - DOMAIN-SUFFIX,opal.google.com,🤖 AI
+  - DOMAIN-SUFFIX,opal.withgoogle.com,🤖 AI
   - DOMAIN-SUFFIX,groq.com,🤖 AI
   - DOMAIN-SUFFIX,clipdrop.co,🤖 AI
   - DOMAIN-SUFFIX,jasper.ai,🤖 AI
+  - DOMAIN,api.app.prod.grazie.aws.intellij.net,🤖 AI
+  - DOMAIN,api.jetbrains.cloud,🤖 AI
   - DOMAIN-SUFFIX,jetbrains.ai,🤖 AI
+  - DOMAIN,account.jetbrains.com,🤖 AI
+  - DOMAIN,oauth.account.jetbrains.com,🤖 AI
+  - DOMAIN-SUFFIX,kiro.dev,🤖 AI
+  - DOMAIN,q.eu-central-1.amazonaws.com,🤖 AI
+  - DOMAIN,q.us-east-1.amazonaws.com,🤖 AI
   - DOMAIN-SUFFIX,meta.ai,🤖 AI
-  - DOMAIN-SUFFIX,meta.com,🤖 AI
+  - DOMAIN-SUFFIX,muse.ai,🤖 AI
+  - DOMAIN-SUFFIX,copilot.cloud.microsoft,🤖 AI
+  - DOMAIN-SUFFIX,copilot.com,🤖 AI
+  - DOMAIN-SUFFIX,copilot.microsoft.com,🤖 AI
+  - DOMAIN,login.live.com,🤖 AI
+  - DOMAIN,login.microsoftonline.com,🤖 AI
+  - DOMAIN-SUFFIX,mistral.ai,🤖 AI
   - DOMAIN-SUFFIX,openart.ai,🤖 AI
   - DOMAIN-SUFFIX,openrouter.ai,🤖 AI
   - DOMAIN-SUFFIX,perplexity.ai,🤖 AI
-  - DOMAIN-SUFFIX,poe.com,🤖 AI
-  - DOMAIN-SUFFIX,apple-relay.apple.com,🤖 AI
-  - DOMAIN-SUFFIX,apple-relay.fastly-edge.com,🤖 AI
-  - DOMAIN-SUFFIX,apple-relay.cloudflare.com,🤖 AI
-  - DOMAIN-SUFFIX,apple-relay.mask.apple-dns.net,🤖 AI
-  - DOMAIN-SUFFIX,guzzoni.apple.com,🤖 AI
-  - DOMAIN-SUFFIX,cp4.cloudflare.com,🤖 AI
-  - DOMAIN-SUFFIX,gspe1-ssl.ls.apple.com,🤖 AI
-  - DOMAIN-SUFFIX,smoot.apple.com,🤖 AI
-  - DOMAIN-SUFFIX,amp-api.apps.apple.com,🤖 AI
-  - DOMAIN-SUFFIX,gateway.icloud.com,🤖 AI
-  - DOMAIN-SUFFIX,updates.cdn-apple.com,🤖 AI
+  - DOMAIN-SUFFIX,pplx.ai,🤖 AI
   - DOMAIN-SUFFIX,sora.com,🤖 AI
   - DOMAIN-SUFFIX,trae.ai,🤖 AI
   - DOMAIN-SUFFIX,traeapi.us,🤖 AI
-  - DOMAIN-SUFFIX,windsurf.com,🤖 AI
+  - DOMAIN,trae-api-sg.mchost.guru,🤖 AI
+  - DOMAIN,trae-api-us.mchost.guru,🤖 AI
   - DOMAIN-SUFFIX,codeium.com,🤖 AI
   - DOMAIN-SUFFIX,codeiumdata.com,🤖 AI
+  - DOMAIN-SUFFIX,windsurf.com,🤖 AI
   - DOMAIN-SUFFIX,zed.dev,🤖 AI
+  - DOMAIN-SUFFIX,grok.com,🤖 AI
+  - DOMAIN-SUFFIX,grokipedia.com,🤖 AI
+  - DOMAIN-SUFFIX,grokusercontent.com,🤖 AI
+  - DOMAIN-SUFFIX,x.ai,🤖 AI
 
   # Proxy
-  - DOMAIN,cdp.cloud.unity3d.com,🔰 境外流量
+  - DOMAIN-SUFFIX,archiveofourown.org,🔰 境外流量
+  - DOMAIN-SUFFIX,appledaily.com,🔰 境外流量
+  - DOMAIN-SUFFIX,appledaily.com.hk,🔰 境外流量
+  - DOMAIN-SUFFIX,appledaily.com.tw,🔰 境外流量
+  - DOMAIN-SUFFIX,appledaily.hk,🔰 境外流量
   - DOMAIN-SUFFIX,battle.net,🔰 境外流量
   - DOMAIN-SUFFIX,battlenet.com,🔰 境外流量
   - DOMAIN-SUFFIX,blizzard.com,🔰 境外流量
+  - DOMAIN,cdp.cloud.unity3d.com,🔰 境外流量
+  - DOMAIN-SUFFIX,blogspot.com,🔰 境外流量
+  - DOMAIN-SUFFIX,blogspot.hk,🔰 境外流量
+  - DOMAIN-SUFFIX,addtodropbox.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropbox-dns.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropbox.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropbox.tech,🔰 境外流量
+  - DOMAIN-SUFFIX,dropbox.zendesk.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropboxapi.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropboxbusiness.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropboxcaptcha.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropboxexperiment.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropboxforum.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropboxforums.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropboxinsiders.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropboxlegal.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropboxmail.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropboxpartners.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropboxstatic.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropboxteam.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dropboxusercontent.com,🔰 境外流量
+  - DOMAIN-SUFFIX,getdropbox.com,🔰 境外流量
+  - DOMAIN-SUFFIX,e-hentai.org,🔰 境外流量
+  - DOMAIN-SUFFIX,exhentai.org,🔰 境外流量
+  - DOMAIN-SUFFIX,chalungu.cn,🔰 境外流量
+  - DOMAIN-SUFFIX,wheel-size.cn,🔰 境外流量
+  - DOMAIN-SUFFIX,facebook.com,🔰 境外流量
+  - DOMAIN-SUFFIX,facebook.net,🔰 境外流量
+  - DOMAIN-SUFFIX,facebook.org,🔰 境外流量
+  - DOMAIN-SUFFIX,facebookbrand.com,🔰 境外流量
+  - DOMAIN-SUFFIX,facebookmail.com,🔰 境外流量
+  - DOMAIN-SUFFIX,fb.com,🔰 境外流量
+  - DOMAIN-SUFFIX,fb.me,🔰 境外流量
+  - DOMAIN-SUFFIX,fbcdn.net,🔰 境外流量
+  - DOMAIN-SUFFIX,fbsbx.com,🔰 境外流量
+  - DOMAIN-SUFFIX,messenger.com,🔰 境外流量
+  - DOMAIN,github-api.arkoselabs.com,🔰 境外流量
+  - DOMAIN-SUFFIX,github.ai,🔰 境外流量
+  - DOMAIN-SUFFIX,github.blog,🔰 境外流量
+  - DOMAIN-SUFFIX,github.career,🔰 境外流量
+  - DOMAIN-SUFFIX,github.com,🔰 境外流量
+  - DOMAIN-SUFFIX,github.community,🔰 境外流量
+  - DOMAIN-SUFFIX,github.dev,🔰 境外流量
+  - DOMAIN-SUFFIX,github.io,🔰 境外流量
+  - DOMAIN-SUFFIX,githubapp.com,🔰 境外流量
+  - DOMAIN-SUFFIX,githubassets.com,🔰 境外流量
+  - DOMAIN-SUFFIX,githubhackathon.com,🔰 境外流量
+  - DOMAIN-SUFFIX,githubnext.com,🔰 境外流量
+  - DOMAIN-SUFFIX,githubpreview.dev,🔰 境外流量
+  - DOMAIN-SUFFIX,githubstatus.com,🔰 境外流量
+  - DOMAIN-SUFFIX,githubsupport.com,🔰 境外流量
+  - DOMAIN-SUFFIX,githubuniverse.com,🔰 境外流量
+  - DOMAIN-SUFFIX,githubusercontent.com,🔰 境外流量
+  - DOMAIN-SUFFIX,thegithubshop.com,🔰 境外流量
+  - DOMAIN-SUFFIX,1e100.net,🔰 境外流量
+  - DOMAIN-SUFFIX,2mdn.net,🔰 境外流量
+  - DOMAIN-SUFFIX,abc.xyz,🔰 境外流量
+  - DOMAIN-SUFFIX,appspot.com,🔰 境外流量
+  - DOMAIN-SUFFIX,autodraw.com,🔰 境外流量
+  - DOMAIN-SUFFIX,blogblog.com,🔰 境外流量
+  - DOMAIN-SUFFIX,chromeexperiments.com,🔰 境外流量
+  - DOMAIN-SUFFIX,cloudproxy.app,🔰 境外流量
+  - DOMAIN-SUFFIX,creativelab5.com,🔰 境外流量
+  - DOMAIN-SUFFIX,culturalspot.org,🔰 境外流量
+  - DOMAIN-SUFFIX,dartlang.org,🔰 境外流量
+  - DOMAIN-SUFFIX,gcr.io,🔰 境外流量
+  - DOMAIN-SUFFIX,gmail.com,🔰 境外流量
+  - DOMAIN-SUFFIX,google,🔰 境外流量
+  - DOMAIN-SUFFIX,google-analytics.com,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ad,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ae,🔰 境外流量
+  - DOMAIN-SUFFIX,google.al,🔰 境外流量
+  - DOMAIN-SUFFIX,google.am,🔰 境外流量
+  - DOMAIN-SUFFIX,google.as,🔰 境外流量
+  - DOMAIN-SUFFIX,google.at,🔰 境外流量
+  - DOMAIN-SUFFIX,google.az,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ba,🔰 境外流量
+  - DOMAIN-SUFFIX,google.be,🔰 境外流量
+  - DOMAIN-SUFFIX,google.bf,🔰 境外流量
+  - DOMAIN-SUFFIX,google.bg,🔰 境外流量
+  - DOMAIN-SUFFIX,google.bi,🔰 境外流量
+  - DOMAIN-SUFFIX,google.bj,🔰 境外流量
+  - DOMAIN-SUFFIX,google.bs,🔰 境外流量
+  - DOMAIN-SUFFIX,google.bt,🔰 境外流量
+  - DOMAIN-SUFFIX,google.by,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ca,🔰 境外流量
+  - DOMAIN-SUFFIX,google.cat,🔰 境外流量
+  - DOMAIN-SUFFIX,google.cd,🔰 境外流量
+  - DOMAIN-SUFFIX,google.cf,🔰 境外流量
+  - DOMAIN-SUFFIX,google.cg,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ch,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ci,🔰 境外流量
+  - DOMAIN-SUFFIX,google.cl,🔰 境外流量
+  - DOMAIN-SUFFIX,google.cm,🔰 境外流量
+  - DOMAIN-SUFFIX,google.cn,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.ao,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.bw,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.ck,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.cr,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.id,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.il,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.in,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.jp,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.ke,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.kr,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.ls,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.ma,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.mz,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.nz,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.th,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.tz,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.ug,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.uk,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.uz,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.ve,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.vi,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.za,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.zm,🔰 境外流量
+  - DOMAIN-SUFFIX,google.co.zw,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.af,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.ag,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.ar,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.au,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.bd,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.bh,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.bn,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.bo,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.br,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.bz,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.co,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.cu,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.cy,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.do,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.ec,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.eg,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.et,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.fj,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.gh,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.gi,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.gt,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.hk,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.jm,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.kh,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.kw,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.lb,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.ly,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.mm,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.mt,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.mx,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.my,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.na,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.ng,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.ni,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.np,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.om,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.pa,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.pe,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.pg,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.ph,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.pk,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.pr,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.py,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.qa,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.sa,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.sb,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.sg,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.sl,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.sv,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.tj,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.tr,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.tw,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.ua,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.uy,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.vc,🔰 境外流量
+  - DOMAIN-SUFFIX,google.com.vn,🔰 境外流量
+  - DOMAIN-SUFFIX,google.cv,🔰 境外流量
+  - DOMAIN-SUFFIX,google.cz,🔰 境外流量
+  - DOMAIN-SUFFIX,google.de,🔰 境外流量
+  - DOMAIN-SUFFIX,google.dev,🔰 境外流量
+  - DOMAIN-SUFFIX,google.dj,🔰 境外流量
+  - DOMAIN-SUFFIX,google.dk,🔰 境外流量
+  - DOMAIN-SUFFIX,google.dm,🔰 境外流量
+  - DOMAIN-SUFFIX,google.dz,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ee,🔰 境外流量
+  - DOMAIN-SUFFIX,google.es,🔰 境外流量
+  - DOMAIN-SUFFIX,google.fi,🔰 境外流量
+  - DOMAIN-SUFFIX,google.fm,🔰 境外流量
+  - DOMAIN-SUFFIX,google.fr,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ga,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ge,🔰 境外流量
+  - DOMAIN-SUFFIX,google.gg,🔰 境外流量
+  - DOMAIN-SUFFIX,google.gl,🔰 境外流量
+  - DOMAIN-SUFFIX,google.gm,🔰 境外流量
+  - DOMAIN-SUFFIX,google.gr,🔰 境外流量
+  - DOMAIN-SUFFIX,google.gy,🔰 境外流量
+  - DOMAIN-SUFFIX,google.hn,🔰 境外流量
+  - DOMAIN-SUFFIX,google.hr,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ht,🔰 境外流量
+  - DOMAIN-SUFFIX,google.hu,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ie,🔰 境外流量
+  - DOMAIN-SUFFIX,google.im,🔰 境外流量
+  - DOMAIN-SUFFIX,google.iq,🔰 境外流量
+  - DOMAIN-SUFFIX,google.is,🔰 境外流量
+  - DOMAIN-SUFFIX,google.it,🔰 境外流量
+  - DOMAIN-SUFFIX,google.je,🔰 境外流量
+  - DOMAIN-SUFFIX,google.jo,🔰 境外流量
+  - DOMAIN-SUFFIX,google.kg,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ki,🔰 境外流量
+  - DOMAIN-SUFFIX,google.kz,🔰 境外流量
+  - DOMAIN-SUFFIX,google.la,🔰 境外流量
+  - DOMAIN-SUFFIX,google.li,🔰 境外流量
+  - DOMAIN-SUFFIX,google.lk,🔰 境外流量
+  - DOMAIN-SUFFIX,google.lt,🔰 境外流量
+  - DOMAIN-SUFFIX,google.lu,🔰 境外流量
+  - DOMAIN-SUFFIX,google.lv,🔰 境外流量
+  - DOMAIN-SUFFIX,google.md,🔰 境外流量
+  - DOMAIN-SUFFIX,google.me,🔰 境外流量
+  - DOMAIN-SUFFIX,google.mg,🔰 境外流量
+  - DOMAIN-SUFFIX,google.mk,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ml,🔰 境外流量
+  - DOMAIN-SUFFIX,google.mn,🔰 境外流量
+  - DOMAIN-SUFFIX,google.mu,🔰 境外流量
+  - DOMAIN-SUFFIX,google.mv,🔰 境外流量
+  - DOMAIN-SUFFIX,google.mw,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ne,🔰 境外流量
+  - DOMAIN-SUFFIX,google.net,🔰 境外流量
+  - DOMAIN-SUFFIX,google.nl,🔰 境外流量
+  - DOMAIN-SUFFIX,google.no,🔰 境外流量
+  - DOMAIN-SUFFIX,google.nr,🔰 境外流量
+  - DOMAIN-SUFFIX,google.nu,🔰 境外流量
+  - DOMAIN-SUFFIX,google.org,🔰 境外流量
+  - DOMAIN-SUFFIX,google.pl,🔰 境外流量
+  - DOMAIN-SUFFIX,google.pn,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ps,🔰 境外流量
+  - DOMAIN-SUFFIX,google.pt,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ro,🔰 境外流量
+  - DOMAIN-SUFFIX,google.rs,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ru,🔰 境外流量
+  - DOMAIN-SUFFIX,google.rw,🔰 境外流量
+  - DOMAIN-SUFFIX,google.sc,🔰 境外流量
+  - DOMAIN-SUFFIX,google.se,🔰 境外流量
+  - DOMAIN-SUFFIX,google.sh,🔰 境外流量
+  - DOMAIN-SUFFIX,google.si,🔰 境外流量
+  - DOMAIN-SUFFIX,google.sk,🔰 境外流量
+  - DOMAIN-SUFFIX,google.sm,🔰 境外流量
+  - DOMAIN-SUFFIX,google.sn,🔰 境外流量
+  - DOMAIN-SUFFIX,google.so,🔰 境外流量
+  - DOMAIN-SUFFIX,google.sr,🔰 境外流量
+  - DOMAIN-SUFFIX,google.st,🔰 境外流量
+  - DOMAIN-SUFFIX,google.td,🔰 境外流量
+  - DOMAIN-SUFFIX,google.tg,🔰 境外流量
+  - DOMAIN-SUFFIX,google.tl,🔰 境外流量
+  - DOMAIN-SUFFIX,google.tm,🔰 境外流量
+  - DOMAIN-SUFFIX,google.tn,🔰 境外流量
+  - DOMAIN-SUFFIX,google.to,🔰 境外流量
+  - DOMAIN-SUFFIX,google.tt,🔰 境外流量
+  - DOMAIN-SUFFIX,google.vu,🔰 境外流量
+  - DOMAIN-SUFFIX,google.ws,🔰 境外流量
+  - DOMAIN-SUFFIX,googleadservices.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googleapis.cn,🔰 境外流量
+  - DOMAIN-SUFFIX,googleapis.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googleblog.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googlebot.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googlecode.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googledomains.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googleearth.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googlefiber.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googlefiber.net,🔰 境外流量
+  - DOMAIN-SUFFIX,googlemail.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googlemaps.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googlephotos.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googlesource.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googlestore.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googlesyndication.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googletagmanager.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googletagservices.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googleusercontent.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googlevideo.com,🔰 境外流量
+  - DOMAIN-SUFFIX,googlezip.net,🔰 境外流量
+  - DOMAIN-SUFFIX,gosetsuden.jp,🔰 境外流量
+  - DOMAIN-SUFFIX,gwtproject.org,🔰 境外流量
+  - DOMAIN-SUFFIX,html5rocks.com,🔰 境外流量
+  - DOMAIN-SUFFIX,keyhole.com,🔰 境外流量
+  - DOMAIN-SUFFIX,madewithcode.com,🔰 境外流量
+  - DOMAIN-SUFFIX,material.io,🔰 境外流量
+  - DOMAIN-SUFFIX,tenor.com,🔰 境外流量
+  - DOMAIN-SUFFIX,tensorflow.org,🔰 境外流量
+  - DOMAIN-SUFFIX,toggleable.com,🔰 境外流量
+  - DOMAIN-SUFFIX,unfiltered.news,🔰 境外流量
+  - DOMAIN-SUFFIX,waveprotocol.org,🔰 境外流量
+  - DOMAIN-SUFFIX,webmproject.org,🔰 境外流量
+  - DOMAIN-SUFFIX,webrtc.org,🔰 境外流量
+  - DOMAIN-SUFFIX,withgoogle.com,🔰 境外流量
+  - DOMAIN-SUFFIX,cdninstagram.com,🔰 境外流量
+  - DOMAIN-SUFFIX,instagram.com,🔰 境外流量
   - DOMAIN-SUFFIX,lin.ee,🔰 境外流量
-  - DOMAIN-SUFFIX,line.me,🔰 境外流量
-  - DOMAIN-SUFFIX,line.naver.jp,🔰 境外流量
   - DOMAIN-SUFFIX,line-apps.com,🔰 境外流量
   - DOMAIN-SUFFIX,line-cdn.net,🔰 境外流量
   - DOMAIN-SUFFIX,line-scdn.net,🔰 境外流量
+  - DOMAIN-SUFFIX,line.me,🔰 境外流量
+  - DOMAIN-SUFFIX,line.naver.jp,🔰 境外流量
   - DOMAIN-SUFFIX,nhncorp.jp,🔰 境外流量
+  - DOMAIN-SUFFIX,element.io,🔰 境外流量
+  - DOMAIN-SUFFIX,matrix.org,🔰 境外流量
+  - DOMAIN-SUFFIX,vector.im,🔰 境外流量
+  - DOMAIN-SUFFIX,bidobido.xyz,🔰 境外流量
+  - DOMAIN-SUFFIX,bikaios.xyz,🔰 境外流量
+  - DOMAIN-SUFFIX,bikawebapp.com,🔰 境外流量
+  - DOMAIN-SUFFIX,diwodiwo.xyz,🔰 境外流量
+  - DOMAIN-SUFFIX,huakacomic.com,🔰 境外流量
+  - DOMAIN-SUFFIX,manhuabika.com,🔰 境外流量
+  - DOMAIN-SUFFIX,pica-id.com,🔰 境外流量
+  - DOMAIN-SUFFIX,tipatipa.xyz,🔰 境外流量
+  - DOMAIN-SUFFIX,wikawika.xyz,🔰 境外流量
   - DOMAIN-SUFFIX,riotcdn.net,🔰 境外流量
-  - DOMAIN-SUFFIX,wr.pvp.net,🔰 境外流量
   - DOMAIN-SUFFIX,riotgames.com,🔰 境外流量
+  - DOMAIN-SUFFIX,wr.pvp.net,🔰 境外流量
   - DOMAIN-SUFFIX,playstation.com,🔰 境外流量
   - DOMAIN-SUFFIX,playstation.net,🔰 境外流量
   - DOMAIN-SUFFIX,playstationnetwork.com,🔰 境外流量
   - DOMAIN-SUFFIX,api.amplitude.com,🔰 境外流量
-  - DOMAIN-SUFFIX,app.smartmailcloud.com,🔰 境外流量
-  - DOMAIN-SUFFIX,gate.hockeyapp.net,🔰 境外流量
   - DOMAIN-SUFFIX,smartmailcloud.com,🔰 境外流量
-  - DOMAIN-KEYWORD,tesla,🔰 境外流量
-  - DOMAIN,api.waqi.info,🔰 境外流量
-  - DOMAIN,aqi.aqicn.org,🔰 境外流量
+  - DOMAIN-SUFFIX,scdn.co,🔰 境外流量
+  - DOMAIN-SUFFIX,tesla.cn,🔰 境外流量
+  - DOMAIN-SUFFIX,tesla.com,🔰 境外流量
+  - DOMAIN-SUFFIX,teslamotors.com,🔰 境外流量
+  - DOMAIN,testflight.apple.com,🔰 境外流量
+  - DOMAIN-SUFFIX,gotinder.com,🔰 境外流量
+  - DOMAIN-SUFFIX,tindersparks.com,🔰 境外流量
   - DOMAIN-SUFFIX,2o7.net,🔰 境外流量
   - DOMAIN-SUFFIX,4everProxy.com,🔰 境外流量
   - DOMAIN-SUFFIX,4shared.com,🔰 境外流量
@@ -1417,8 +1920,9 @@ rules:
   - DOMAIN-SUFFIX,adobe.com,🔰 境外流量
   - DOMAIN-SUFFIX,adobedtm.com,🔰 境外流量
   - DOMAIN-SUFFIX,aerisapi.com,🔰 境外流量
-  - DOMAIN-SUFFIX,akamaihd.net,🔰 境外流量
   - DOMAIN-SUFFIX,airtable.com,🔰 境外流量
+  - DOMAIN-SUFFIX,akamai.net,🔰 境外流量
+  - DOMAIN-SUFFIX,akamaihd.net,🔰 境外流量
   - DOMAIN-SUFFIX,alfredapp.com,🔰 境外流量
   - DOMAIN-SUFFIX,allconnected.co,🔰 境外流量
   - DOMAIN-SUFFIX,amazon.co,🔰 境外流量
@@ -1430,9 +1934,9 @@ rules:
   - DOMAIN-SUFFIX,ampproject.org,🔰 境外流量
   - DOMAIN-SUFFIX,anaconda.com,🔰 境外流量
   - DOMAIN-SUFFIX,ancsconf.org,🔰 境外流量
+  - DOMAIN-SUFFIX,android-x86.org,🔰 境外流量
   - DOMAIN-SUFFIX,android.com,🔰 境外流量
   - DOMAIN-SUFFIX,androidify.com,🔰 境外流量
-  - DOMAIN-SUFFIX,android-x86.org,🔰 境外流量
   - DOMAIN-SUFFIX,angularjs.org,🔰 境外流量
   - DOMAIN-SUFFIX,anthonycalzadilla.com,🔰 境外流量
   - DOMAIN-SUFFIX,aol.com,🔰 境外流量
@@ -1446,7 +1950,6 @@ rules:
   - DOMAIN-SUFFIX,apk-dl.com,🔰 境外流量
   - DOMAIN-SUFFIX,apkpure.com,🔰 境外流量
   - DOMAIN-SUFFIX,appdownloader.net,🔰 境外流量
-  - DOMAIN-SUFFIX,apple-dns.net,🔰 境外流量
   - DOMAIN-SUFFIX,appshopper.com,🔰 境外流量
   - DOMAIN-SUFFIX,arcgis.com,🔰 境外流量
   - DOMAIN-SUFFIX,archive.is,🔰 境外流量
@@ -1463,6 +1966,7 @@ rules:
   - DOMAIN-SUFFIX,azurewebsites.net,🔰 境外流量
   - DOMAIN-SUFFIX,badoo.com,🔰 境外流量
   - DOMAIN-SUFFIX,bandisoft.com,🔰 境外流量
+  - DOMAIN-SUFFIX,bandwagonhost.com,🔰 境外流量
   - DOMAIN-SUFFIX,bbtoystore.com,🔰 境外流量
   - DOMAIN-SUFFIX,bet365.com,🔰 境外流量
   - DOMAIN-SUFFIX,betvictor.com,🔰 境外流量
@@ -1480,7 +1984,6 @@ rules:
   - DOMAIN-SUFFIX,blogger.com,🔰 境外流量
   - DOMAIN-SUFFIX,bloglovin.com,🔰 境外流量
   - DOMAIN-SUFFIX,blogsmithmedia.com,🔰 境外流量
-  - DOMAIN-SUFFIX,blogspot.hk,🔰 境外流量
   - DOMAIN-SUFFIX,bloomberg.cn,🔰 境外流量
   - DOMAIN-SUFFIX,bloomberg.com,🔰 境外流量
   - DOMAIN-SUFFIX,books.com.tw,🔰 境外流量
@@ -1517,6 +2020,7 @@ rules:
   - DOMAIN-SUFFIX,cocoapods.org,🔰 境外流量
   - DOMAIN-SUFFIX,comodoca.com,🔰 境外流量
   - DOMAIN-SUFFIX,crisp.chat,🔰 境外流量
+  - DOMAIN-SUFFIX,crittercism.com,🔰 境外流量
   - DOMAIN-SUFFIX,culturedcode.com,🔰 境外流量
   - DOMAIN-SUFFIX,cygames.jp,🔰 境外流量
   - DOMAIN-SUFFIX,d.pr,🔰 境外流量
@@ -1563,9 +2067,9 @@ rules:
   - DOMAIN-SUFFIX,feedburner.com,🔰 境外流量
   - DOMAIN-SUFFIX,feedly.com,🔰 境外流量
   - DOMAIN-SUFFIX,feedsportal.com,🔰 境外流量
-  - DOMAIN-SUFFIX,firefox.com,🔰 境外流量
   - DOMAIN-SUFFIX,fiftythree.com,🔰 境外流量
   - DOMAIN-SUFFIX,firebaseio.com,🔰 境外流量
+  - DOMAIN-SUFFIX,firefox.com,🔰 境外流量
   - DOMAIN-SUFFIX,flexibits.com,🔰 境外流量
   - DOMAIN-SUFFIX,flickr.com,🔰 境外流量
   - DOMAIN-SUFFIX,flipboard.com,🔰 境外流量
@@ -1588,8 +2092,8 @@ rules:
   - DOMAIN-SUFFIX,getpricetag.com,🔰 境外流量
   - DOMAIN-SUFFIX,gfw.press,🔰 境外流量
   - DOMAIN-SUFFIX,ggpht.com,🔰 境外流量
-  - DOMAIN-SUFFIX,ghostnoteapp.com,🔰 境外流量
   - DOMAIN-SUFFIX,ghcr.io,🔰 境外流量
+  - DOMAIN-SUFFIX,ghostnoteapp.com,🔰 境外流量
   - DOMAIN-SUFFIX,git.io,🔰 境外流量
   - DOMAIN-SUFFIX,gitbook.com,🔰 境外流量
   - DOMAIN-SUFFIX,gitlab.com,🔰 境外流量
@@ -1611,7 +2115,9 @@ rules:
   - DOMAIN-SUFFIX,gunsamerica.com,🔰 境外流量
   - DOMAIN-SUFFIX,gvt0.com,🔰 境外流量
   - DOMAIN-SUFFIX,gvt1.com,🔰 境外流量
+  - DOMAIN-SUFFIX,hackmd.io,🔰 境外流量
   - DOMAIN-SUFFIX,helpshift.com,🔰 境外流量
+  - DOMAIN-SUFFIX,heroku.com,🔰 境外流量
   - DOMAIN-SUFFIX,hitun.io,🔰 境外流量
   - DOMAIN-SUFFIX,hockeyapp.net,🔰 境外流量
   - DOMAIN-SUFFIX,homedepot.com,🔰 境外流量
@@ -1656,6 +2162,8 @@ rules:
   - DOMAIN-SUFFIX,kenengba.com,🔰 境外流量
   - DOMAIN-SUFFIX,kik.com,🔰 境外流量
   - DOMAIN-SUFFIX,klip.me,🔰 境外流量
+  - DOMAIN-SUFFIX,kobo.com,🔰 境外流量
+  - DOMAIN-SUFFIX,kobobooks.com,🔰 境外流量
   - DOMAIN-SUFFIX,leancloud.com,🔰 境外流量
   - DOMAIN-SUFFIX,leetcode.com,🔰 境外流量
   - DOMAIN-SUFFIX,libsyn.com,🔰 境外流量
@@ -1679,6 +2187,7 @@ rules:
   - DOMAIN-SUFFIX,mashable.com,🔰 境外流量
   - DOMAIN-SUFFIX,mathjax.org,🔰 境外流量
   - DOMAIN-SUFFIX,maven.org,🔰 境外流量
+  - DOMAIN-SUFFIX,mediawiki.org,🔰 境外流量
   - DOMAIN-SUFFIX,medium.com,🔰 境外流量
   - DOMAIN-SUFFIX,mega.co.nz,🔰 境外流量
   - DOMAIN-SUFFIX,mega.nz,🔰 境外流量
@@ -1697,14 +2206,17 @@ rules:
   - DOMAIN-SUFFIX,nasa.gov,🔰 境外流量
   - DOMAIN-SUFFIX,ndr.de,🔰 境外流量
   - DOMAIN-SUFFIX,netdna-cdn.com,🔰 境外流量
+  - DOMAIN-SUFFIX,netmarble.com,🔰 境外流量
   - DOMAIN-SUFFIX,newipnow.com,🔰 境外流量
   - DOMAIN-SUFFIX,nextmedia.com,🔰 境外流量
+  - DOMAIN-SUFFIX,nianticlabs.com,🔰 境外流量
   - DOMAIN-SUFFIX,nicovideo.jp,🔰 境外流量
   - DOMAIN-SUFFIX,nih.gov,🔰 境外流量
-  - DOMAIN-SUFFIX,nimg.jp,🔰 境外流量
   - DOMAIN-SUFFIX,nikke-kr.com,🔰 境外流量
+  - DOMAIN-SUFFIX,nimg.jp,🔰 境外流量
   - DOMAIN-SUFFIX,nintendo.com,🔰 境外流量
   - DOMAIN-SUFFIX,nintendo.net,🔰 境外流量
+  - DOMAIN-SUFFIX,notion.com,🔰 境外流量
   - DOMAIN-SUFFIX,notion.so,🔰 境外流量
   - DOMAIN-SUFFIX,novafile.com,🔰 境外流量
   - DOMAIN-SUFFIX,nrk.no,🔰 境外流量
@@ -1736,6 +2248,7 @@ rules:
   - DOMAIN-SUFFIX,picasaweb.com,🔰 境外流量
   - DOMAIN-SUFFIX,pinboard.in,🔰 境外流量
   - DOMAIN-SUFFIX,ping.pe,🔰 境外流量
+  - DOMAIN-SUFFIX,pinimg.com,🔰 境外流量
   - DOMAIN-SUFFIX,pinterest.com,🔰 境外流量
   - DOMAIN-SUFFIX,pixelmator.com,🔰 境外流量
   - DOMAIN-SUFFIX,pixiv.net,🔰 境外流量
@@ -1745,12 +2258,12 @@ rules:
   - DOMAIN-SUFFIX,polymer-project.org,🔰 境外流量
   - DOMAIN-SUFFIX,popo.tw,🔰 境外流量
   - DOMAIN-SUFFIX,potato.im,🔰 境外流量
-  - DOMAIN-SUFFIX,redd.it,🔰 境外流量
-  - DOMAIN-SUFFIX,rthk.hk,🔰 境外流量
   - DOMAIN-SUFFIX,prfct.co,🔰 境外流量
+  - DOMAIN-SUFFIX,proton.me,🔰 境外流量
   - DOMAIN-SUFFIX,proxfree.com,🔰 境外流量
   - DOMAIN-SUFFIX,psiphon3.com,🔰 境外流量
   - DOMAIN-SUFFIX,ptt.cc,🔰 境外流量
+  - DOMAIN-SUFFIX,pubnub.com,🔰 境外流量
   - DOMAIN-SUFFIX,pubu.com.tw,🔰 境外流量
   - DOMAIN-SUFFIX,puffinbrowser.com,🔰 境外流量
   - DOMAIN-SUFFIX,pushbullet.com,🔰 境外流量
@@ -1761,6 +2274,7 @@ rules:
   - DOMAIN-SUFFIX,readingtimes.com.tw,🔰 境外流量
   - DOMAIN-SUFFIX,readmoo.com,🔰 境外流量
   - DOMAIN-SUFFIX,recaptcha.net,🔰 境外流量
+  - DOMAIN-SUFFIX,redd.it,🔰 境外流量
   - DOMAIN-SUFFIX,reddit.com,🔰 境外流量
   - DOMAIN-SUFFIX,redditmedia.com,🔰 境外流量
   - DOMAIN-SUFFIX,redditstatic.com,🔰 境外流量
@@ -1769,12 +2283,14 @@ rules:
   - DOMAIN-SUFFIX,rileyguide.com,🔰 境外流量
   - DOMAIN-SUFFIX,rime.im,🔰 境外流量
   - DOMAIN-SUFFIX,rsf.org,🔰 境外流量
+  - DOMAIN-SUFFIX,rthk.hk,🔰 境外流量
   - DOMAIN-SUFFIX,sciencedaily.com,🔰 境外流量
   - DOMAIN-SUFFIX,sciencemag.org,🔰 境外流量
   - DOMAIN-SUFFIX,scribd.com,🔰 境外流量
   - DOMAIN-SUFFIX,search.com,🔰 境外流量
   - DOMAIN-SUFFIX,servebom.com,🔰 境外流量
   - DOMAIN-SUFFIX,sexinsex.net,🔰 境外流量
+  - DOMAIN-SUFFIX,sfx.ms,🔰 境外流量
   - DOMAIN-SUFFIX,shadowsocks.org,🔰 境外流量
   - DOMAIN-SUFFIX,shadowverse.jp,🔰 境外流量
   - DOMAIN-SUFFIX,sharethis.com,🔰 境外流量
@@ -1784,9 +2300,9 @@ rules:
   - DOMAIN-SUFFIX,simp.ly,🔰 境外流量
   - DOMAIN-SUFFIX,simplenote.com,🔰 境外流量
   - DOMAIN-SUFFIX,sketchappsources.com,🔰 境外流量
-  - DOMAIN-SUFFIX,slack.com,🔰 境外流量
   - DOMAIN-SUFFIX,slack-edge.com,🔰 境外流量
   - DOMAIN-SUFFIX,slack-msgs.com,🔰 境外流量
+  - DOMAIN-SUFFIX,slack.com,🔰 境外流量
   - DOMAIN-SUFFIX,slideshare.net,🔰 境外流量
   - DOMAIN-SUFFIX,smartdnsproxy.com,🔰 境外流量
   - DOMAIN-SUFFIX,smh.com.au,🔰 境外流量
@@ -1850,6 +2366,7 @@ rules:
   - DOMAIN-SUFFIX,tokyocn.com,🔰 境外流量
   - DOMAIN-SUFFIX,tomshardware.com,🔰 境外流量
   - DOMAIN-SUFFIX,torcn.com,🔰 境外流量
+  - DOMAIN-SUFFIX,torproject.org,🔰 境外流量
   - DOMAIN-SUFFIX,torrentmac.net,🔰 境外流量
   - DOMAIN-SUFFIX,torrentprivacy.com,🔰 境外流量
   - DOMAIN-SUFFIX,torrentproject.se,🔰 境外流量
@@ -1859,6 +2376,7 @@ rules:
   - DOMAIN-SUFFIX,trakt.tv,🔰 境外流量
   - DOMAIN-SUFFIX,transparency.org,🔰 境外流量
   - DOMAIN-SUFFIX,trello.com,🔰 境外流量
+  - DOMAIN-SUFFIX,trellocdn.com,🔰 境外流量
   - DOMAIN-SUFFIX,trendsmap.com,🔰 境外流量
   - DOMAIN-SUFFIX,trulyergonomic.com,🔰 境外流量
   - DOMAIN-SUFFIX,trustasiassl.com,🔰 境外流量
@@ -1947,13 +2465,24 @@ rules:
   - DOMAIN-SUFFIX,westca.com,🔰 境外流量
   - DOMAIN-SUFFIX,westpoint.edu,🔰 境外流量
   - DOMAIN-SUFFIX,whatbrowser.org,🔰 境外流量
-  - DOMAIN-SUFFIX,wikiwand.com,🔰 境外流量
+  - DOMAIN-SUFFIX,wikibooks.org,🔰 境外流量
+  - DOMAIN-SUFFIX,wikidata.org,🔰 境外流量
+  - DOMAIN-SUFFIX,wikifunctions.org,🔰 境外流量
+  - DOMAIN-SUFFIX,wikileaks-forum.com,🔰 境外流量
   - DOMAIN-SUFFIX,wikileaks.info,🔰 境外流量
   - DOMAIN-SUFFIX,wikileaks.org,🔰 境外流量
-  - DOMAIN-SUFFIX,wikileaks-forum.com,🔰 境外流量
   - DOMAIN-SUFFIX,wikimedia.org,🔰 境外流量
+  - DOMAIN-SUFFIX,wikimediafoundation.org,🔰 境外流量
+  - DOMAIN-SUFFIX,wikinews.org,🔰 境外流量
   - DOMAIN-SUFFIX,wikipedia.com,🔰 境外流量
   - DOMAIN-SUFFIX,wikipedia.org,🔰 境外流量
+  - DOMAIN-SUFFIX,wikiquote.org,🔰 境外流量
+  - DOMAIN-SUFFIX,wikisource.org,🔰 境外流量
+  - DOMAIN-SUFFIX,wikispecies.org,🔰 境外流量
+  - DOMAIN-SUFFIX,wikiversity.org,🔰 境外流量
+  - DOMAIN-SUFFIX,wikivoyage.org,🔰 境外流量
+  - DOMAIN-SUFFIX,wikiwand.com,🔰 境外流量
+  - DOMAIN-SUFFIX,wiktionary.org,🔰 境外流量
   - DOMAIN-SUFFIX,wn.com,🔰 境外流量
   - DOMAIN-SUFFIX,wordpress.com,🔰 境外流量
   - DOMAIN-SUFFIX,workflow.is,🔰 境外流量
@@ -1981,8 +2510,8 @@ rules:
   - DOMAIN-SUFFIX,yastatic.net,🔰 境外流量
   - DOMAIN-SUFFIX,ycombinator.com,🔰 境外流量
   - DOMAIN-SUFFIX,yeeyi.com,🔰 境外流量
-  - DOMAIN-SUFFIX,yesasia.com,🔰 境外流量
   - DOMAIN-SUFFIX,yes-news.com,🔰 境外流量
+  - DOMAIN-SUFFIX,yesasia.com,🔰 境外流量
   - DOMAIN-SUFFIX,yidio.com,🔰 境外流量
   - DOMAIN-SUFFIX,yimg.com,🔰 境外流量
   - DOMAIN-SUFFIX,ying.com,🔰 境外流量
@@ -1995,75 +2524,37 @@ rules:
   - DOMAIN-SUFFIX,zaobao.com.sg,🔰 境外流量
   - DOMAIN-SUFFIX,zeutch.com,🔰 境外流量
   - DOMAIN-SUFFIX,zynamics.com,🔰 境外流量
-  - DOMAIN-KEYWORD,appledaily,🔰 境外流量
-  - DOMAIN-KEYWORD,beetalk,🔰 境外流量
-  - DOMAIN-KEYWORD,blogspot,🔰 境外流量
-  - DOMAIN-KEYWORD,dropbox,🔰 境外流量
-  - DOMAIN-KEYWORD,facebook,🔰 境外流量
-  - DOMAIN-KEYWORD,github,🔰 境外流量
-  - DOMAIN-KEYWORD,instagram,🔰 境外流量
-  - DOMAIN-KEYWORD,twitter,🔰 境外流量
-  - DOMAIN-KEYWORD,whatsapp,🔰 境外流量
-  - DOMAIN-KEYWORD,google,🔰 境外流量
-  - DOMAIN-SUFFIX,1e100.net,🔰 境外流量
-  - DOMAIN-SUFFIX,2mdn.net,🔰 境外流量
-  - DOMAIN-SUFFIX,abc.xyz,🔰 境外流量
-  - DOMAIN-SUFFIX,akamai.net,🔰 境外流量
-  - DOMAIN-SUFFIX,appspot.com,🔰 境外流量
-  - DOMAIN-SUFFIX,autodraw.com,🔰 境外流量
-  - DOMAIN-SUFFIX,bandwagonhost.com,🔰 境外流量
-  - DOMAIN-SUFFIX,blogblog.com,🔰 境外流量
-  - DOMAIN-SUFFIX,chromeexperiments.com,🔰 境外流量
-  - DOMAIN-SUFFIX,creativelab5.com,🔰 境外流量
-  - DOMAIN-SUFFIX,crittercism.com,🔰 境外流量
-  - DOMAIN-SUFFIX,culturalspot.org,🔰 境外流量
-  - DOMAIN-SUFFIX,dartlang.org,🔰 境外流量
-  - DOMAIN-SUFFIX,fb.com,🔰 境外流量
-  - DOMAIN-SUFFIX,fb.me,🔰 境外流量
-  - DOMAIN-SUFFIX,fbcdn.net,🔰 境外流量
-  - DOMAIN-SUFFIX,fbsbx.com,🔰 境外流量
-  - DOMAIN-SUFFIX,gcr.io,🔰 境外流量
-  - DOMAIN-SUFFIX,gmail.com,🔰 境外流量
-  - DOMAIN-SUFFIX,gosetsuden.jp,🔰 境外流量
-  - DOMAIN-SUFFIX,gwtproject.org,🔰 境外流量
-  - DOMAIN-SUFFIX,hackmd.io,🔰 境外流量
-  - DOMAIN-SUFFIX,heroku.com,🔰 境外流量
-  - DOMAIN-SUFFIX,html5rocks.com,🔰 境外流量
-  - DOMAIN-SUFFIX,keyhole.com,🔰 境外流量
-  - DOMAIN-SUFFIX,kobo.com,🔰 境外流量
-  - DOMAIN-SUFFIX,kobobooks.com,🔰 境外流量
-  - DOMAIN-SUFFIX,madewithcode.com,🔰 境外流量
-  - DOMAIN-SUFFIX,material.io,🔰 境外流量
-  - DOMAIN-SUFFIX,messenger.com,🔰 境外流量
-  - DOMAIN-SUFFIX,netmarble.com,🔰 境外流量
-  - DOMAIN-SUFFIX,nianticlabs.com,🔰 境外流量
-  - DOMAIN-SUFFIX,pinimg.com,🔰 境外流量
-  - DOMAIN-SUFFIX,proton.me,🔰 境外流量
-  - DOMAIN-SUFFIX,pubnub.com,🔰 境外流量
-  - DOMAIN-SUFFIX,scdn.co,🔰 境外流量
+  - DOMAIN-SUFFIX,ads-twitter.com,🔰 境外流量
   - DOMAIN-SUFFIX,t.co,🔰 境外流量
-  - DOMAIN-SUFFIX,tenor.com,🔰 境外流量
-  - DOMAIN-SUFFIX,tensorflow.org,🔰 境外流量
-  - DOMAIN-SUFFIX,toggleable.com,🔰 境外流量
-  - DOMAIN-SUFFIX,torproject.org,🔰 境外流量
   - DOMAIN-SUFFIX,twimg.com,🔰 境外流量
   - DOMAIN-SUFFIX,twitpic.com,🔰 境外流量
-  - DOMAIN-SUFFIX,unfiltered.news,🔰 境外流量
-  - DOMAIN-SUFFIX,waveprotocol.org,🔰 境外流量
-  - DOMAIN-SUFFIX,webmproject.org,🔰 境外流量
-  - DOMAIN-SUFFIX,webrtc.org,🔰 境外流量
+  - DOMAIN-SUFFIX,twitter.biz,🔰 境外流量
+  - DOMAIN-SUFFIX,twitter.com,🔰 境外流量
+  - DOMAIN-SUFFIX,twitter.jp,🔰 境外流量
+  - DOMAIN-SUFFIX,twittercommunity.com,🔰 境外流量
+  - DOMAIN-SUFFIX,twitterflightschool.com,🔰 境外流量
+  - DOMAIN-SUFFIX,twitterinc.com,🔰 境外流量
+  - DOMAIN-SUFFIX,twitteroauth.com,🔰 境外流量
+  - DOMAIN-SUFFIX,twitterstat.us,🔰 境外流量
+  - DOMAIN-SUFFIX,greasyfork.org,🔰 境外流量
+  - DOMAIN-SUFFIX,sleazyfork.org,🔰 境外流量
+  - DOMAIN-SUFFIX,tampermonkey.net,🔰 境外流量
   - DOMAIN-SUFFIX,v2ex.com,🔰 境外流量
-  - DOMAIN-KEYWORD,dlercloud,🔰 境外流量
-  - DOMAIN-SUFFIX,vikacg.com,🔰 境外流量
   - DOMAIN-SUFFIX,picjs.xyz,🔰 境外流量
-  - DOMAIN-SUFFIX,wheel-size.cn,🔰 境外流量
-  - DOMAIN-SUFFIX,chalungu.cn,🔰 境外流量
+  - DOMAIN-SUFFIX,vikacg.com,🔰 境外流量
+  - DOMAIN,api.waqi.info,🔰 境外流量
+  - DOMAIN,aqi.aqicn.org,🔰 境外流量
+  - DOMAIN-SUFFIX,whatsapp.com,🔰 境外流量
+  - DOMAIN-SUFFIX,whatsapp.net,🔰 境外流量
+  - DOMAIN-SUFFIX,whatsappbrand.com,🔰 境外流量
 
   - DOMAIN-SUFFIX,fast.com,🔰 境外流量
-  - DOMAIN-KEYWORD,speedtest,🔰 境外流量
+  - DOMAIN-SUFFIX,speed.cloudflare.com,🔰 境外流量
   - DOMAIN-SUFFIX,ooklaserver.net,🔰 境外流量
   - DOMAIN,speed.dler.io,🔰 境外流量
-  - DOMAIN-SUFFIX,speed.cloudflare.com,🔰 境外流量
+  - DOMAIN-SUFFIX,speedtest.co,🔰 境外流量
+  - DOMAIN-SUFFIX,speedtest.net,🔰 境外流量
+  - DOMAIN-SUFFIX,speedtestcustom.com,🔰 境外流量
 
   - DOMAIN-SUFFIX,dmm-extension.com,🔰 境外流量
   - DOMAIN-SUFFIX,dmm.co.jp,🔰 境外流量
@@ -2072,6 +2563,7 @@ rules:
   - DOMAIN-SUFFIX,p-smith.com,🔰 境外流量
   - DOMAIN-SUFFIX,videomarket.jp,🔰 境外流量
   - DOMAIN-SUFFIX,vmdash-cenc.akamaized.net,🔰 境外流量
+
   - DOMAIN,eaasserts-a.akamaihd.net,🔰 境外流量
   - DOMAIN,originasserts.akamaized.net,🔰 境外流量
   - DOMAIN,gog.salesmanago.com,🔰 境外流量
@@ -2525,6 +3017,7 @@ rules:
   - DOMAIN-SUFFIX,csgo.wmsj.cn,🔰 境外流量
   - DOMAIN-SUFFIX,dl.steam.clngaa.com,🔰 境外流量
   - DOMAIN-SUFFIX,dl.steam.ksyna.com,🔰 境外流量
+  - DOMAIN-SUFFIX,dota2.com,🔰 境外流量
   - DOMAIN-SUFFIX,dota2.wmsj.cn,🔰 境外流量
   - DOMAIN-SUFFIX,edge.steam-dns.top.comcast.net,🔰 境外流量
   - DOMAIN-SUFFIX,f3b7q2p3.ssl.hwcdn.net,🔰 境外流量
@@ -2550,6 +3043,7 @@ rules:
   - DOMAIN-SUFFIX,steamcdn-a.akamaihd.net,🔰 境外流量
   - DOMAIN-SUFFIX,steamcommunity-a.akamaihd.net,🔰 境外流量
   - DOMAIN-SUFFIX,steamcommunity.com,🔰 境外流量
+  - DOMAIN-SUFFIX,steamconnecttest.com,🔰 境外流量
   - DOMAIN-SUFFIX,steamcontent.tnkjmec.com,🔰 境外流量
   - DOMAIN-SUFFIX,steamdeck.com,🔰 境外流量
   - DOMAIN-SUFFIX,steamgames.com,🔰 境外流量
@@ -2568,6 +3062,7 @@ rules:
   - DOMAIN-SUFFIX,steamuserimages-a.akamaihd.net,🔰 境外流量
   - DOMAIN-SUFFIX,steamvideo-a.akamaihd.net,🔰 境外流量
   - DOMAIN-SUFFIX,underlords.com,🔰 境外流量
+  - DOMAIN-SUFFIX,valve.net,🔰 境外流量
   - DOMAIN-SUFFIX,valvesoftware.com,🔰 境外流量
   - DOMAIN-SUFFIX,wmsjsteam.com,🔰 境外流量
   - DOMAIN-SUFFIX,steamchina.com,🔰 境外流量
@@ -2635,14 +3130,27 @@ rules:
   - IP-CIDR,182.162.116.1/32,🔰 境外流量
   - IP-CIDR,202.9.67.59/32,🔰 境外流量
   - IP-CIDR,203.69.111.4/32,🔰 境外流量
-  - IP-CIDR,24.105.62.129/32,🔰 境外流量
   - IP-CIDR,54.207.104.145/32,🔰 境外流量
   - IP-CIDR,35.192.0.0/12,🔰 境外流量
+  - IP-CIDR,185.60.114.159/32,🔰 境外流量
   - IP-CIDR,203.66.81.98/32,🔰 境外流量
   - IP-CIDR,211.234.110.1/32,🔰 境外流量
+  - IP-CIDR,24.105.62.129/32,🔰 境外流量
   - IP-CIDR,54.207.107.12/32,🔰 境外流量
   - IP-CIDR,202.9.67.254/32,🔰 境外流量
   - IP-CIDR,222.231.22.1/32,🔰 境外流量
+  - IP-CIDR,103.10.124.0/23,🔰 境外流量
+  - IP-CIDR,103.28.54.0/24,🔰 境外流量
+  - IP-CIDR,146.66.152.0/24,🔰 境外流量
+  - IP-CIDR,146.66.155.0/24,🔰 境外流量
+  - IP-CIDR,155.133.224.0/19,🔰 境外流量
+  - IP-CIDR,162.254.192.0/21,🔰 境外流量
+  - IP-CIDR,185.25.180.0/22,🔰 境外流量
+  - IP-CIDR,192.69.96.0/22,🔰 境外流量
+  - IP-CIDR,205.196.6.0/24,🔰 境外流量
+  - IP-CIDR,208.64.200.0/22,🔰 境外流量
+  - IP-CIDR,208.78.164.0/22,🔰 境外流量
+  - IP-CIDR,45.121.184.0/24,🔰 境外流量
   - IP-CIDR,13.210.25.233/32,🔰 境外流量
   - IP-CIDR,13.212.170.102/32,🔰 境外流量
   - IP-CIDR,13.212.171.212/32,🔰 境外流量
@@ -2666,7 +3174,6 @@ rules:
   - IP-CIDR,54.207.168.84/32,🔰 境外流量
   - IP-CIDR,54.248.64.192/32,🔰 境外流量
   - IP-CIDR,137.221.105.2/32,🔰 境外流量
-  - IP-CIDR,185.60.114.159/32,🔰 境外流量
   - IP-CIDR,210.71.148.11/32,🔰 境外流量
   - IP-CIDR,211.115.104.1/32,🔰 境外流量
 
@@ -2713,10 +3220,6 @@ rules:
   - DOMAIN-SUFFIX,shp.ee,🔰 境外流量
 
   # Microsoft
-  - DOMAIN-SUFFIX,here.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,here.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,heremaps.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,ovi.com.cn,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,azure,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,azure-apim.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,azure-dns.com,Ⓜ️ Microsoft
@@ -2769,8 +3272,10 @@ rules:
   - DOMAIN-SUFFIX,tryfunctions.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,windowsazure.cn,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,windowsazure.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,azure.microsoft.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,azuremarketplace.microsoft.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,beth.games,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,bethesda.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,bethesdagamestudios.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,bethsoft.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,bbing.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,bibg.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,biing.com,Ⓜ️ Microsoft
@@ -2825,22 +3330,18 @@ rules:
   - DOMAIN-SUFFIX,renovacionoffice.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,sprinklesapp.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,working-bing-int.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,bj1.api.bing.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,emoi-cncdn.bing.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,cn.bing.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,cn.bing.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,ditu.live.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,a-msedge.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,c-msedge.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,e-msedge.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,edgesuite.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,evoke-windowsservices-tas.msedge,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftedge.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftedgeinsider.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msedge.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,s-msedge.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,femalefounderscomp.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,m12.vc,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,aicscience.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,mmais.com.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msminico.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msminico.com.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msxiaobing.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msxiaoice.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msxiaona.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,officeplus.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,renlifang.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,cortana.ai,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,cortanaanalytics.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,cortanaskills.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,adaptivecards.io,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,api-extractor.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,apisof.net,Ⓜ️ Microsoft
@@ -2887,143 +3388,38 @@ rules:
   - DOMAIN-SUFFIX,vfsforgit.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,vfsforgit.org,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,xamarin.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,developer.microsoft.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,dtlgalleryint.cloudapp.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,poshtestgallery.cloudapp.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,psg-int-centralus.cloudapp.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,psg-int-eastus.cloudapp.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoft-online.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoft-online.com.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftnews.cc,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftnews.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftnews.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftnews.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftnews.org,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftnewsforkids.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftnewsforkids.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftnewsforkids.org,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftnewskids.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftnewskids.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftnewskids.org,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftol.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftol.com.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftusercontent.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msn.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msn.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msn.com.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msn.com.nsatc.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msn.com.tw,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msnewskids.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msnewskids.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msnewskids.org,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msnkids.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,winmp.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,o365cn.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,o365files.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,o365weve-dev.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,o365weve-ppe.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,o365weve.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,office,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,office.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,office.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,office365.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,officedev.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,1drv.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,1drv.ms,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,livefilestore.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,onedrive.co,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,onedrive.co.uk,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,onedrive.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,onedrive.eu,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,onedrive.live.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,onedrive.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,onedrive.org,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,storage.live.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,groupme.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,skype.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,skype.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,skypeassets.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,skypeassets.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,skypeforbusiness.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,sway-cdn.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,sway-extensions.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,sway.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,visualstudio-staging.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,visualstudio.co,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,visualstudio.co.uk,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,visualstudio.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,visualstudio.eu,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,visualstudio.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,vsassets.io,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,vscode-unpkg.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,vscode-webview.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,vscode.dev,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,live.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,live.com.akadns.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,sclive.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,windowslive.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,wlxrs.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,aicscience.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,mmais.com.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msminico.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msminico.com.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msxiaobing.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msxiaoice.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msxiaona.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,officeplus.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,renlifang.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,cortana.ai,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,cortanaanalytics.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,cortanaskills.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,forzamotorsport.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,forzaracingchampionship.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,forzarc.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,gamepass.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,msgamestudios.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,orithegame.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,renovacionxboxlive.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,tellmewhygame.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xbox.co,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xbox.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xbox.eu,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xbox.org,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xbox360.co,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xbox360.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xbox360.eu,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xbox360.org,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xboxab.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xboxgamepass.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xboxgamestudios.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xboxlive.cn,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xboxlive.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xboxone.co,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xboxone.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xboxone.eu,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xboxplayanywhere.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xboxservices.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xboxstudios.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,xbx.lv,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,callersbane.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,minecraft.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,minecraftshop.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,mojang.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,beth.games,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,bethesda.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,bethesdagamestudios.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,bethsoft.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,Applicationinsights.io,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,Applicationinsights.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,a-msedge.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,c-msedge.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,e-msedge.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,edgesuite.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,evoke-windowsservices-tas.msedge,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftedge.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftedgeinsider.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msedge.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,s-msedge.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,here.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,here.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,heremaps.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,ovi.com.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,femalefounderscomp.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,m12.vc,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,a1158.g.akamai.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,a122.dscg3.akamai.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,a767.dscg3.akamai.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,aadrm.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,acompli.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,aka.ms,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,ankarazirvesi2018.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,Applicationinsights.io,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,applicationinsights.io,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,Applicationinsights.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,applicationinsights.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,aria.ms,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,asp.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,aspnetcdn.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,assets-yammer.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,azurerms.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,b.akamaiedge.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,binads.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,bluehatil.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,boswp.com,Ⓜ️ Microsoft
@@ -3037,6 +3433,8 @@ rules:
   - DOMAIN-SUFFIX,crmdynint-gcc.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,crmdynint.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,crossborderexpansion.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,cs11.wpc.v0cdn.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,cs9.wac.phicdn.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,docs.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,dwh5.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,dynamics.com,Ⓜ️ Microsoft
@@ -3045,6 +3443,7 @@ rules:
   - DOMAIN-SUFFIX,fasttrackreadysupport.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,fluidpreview.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,footprintdns.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,g.akamaiedge.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,gameuxmasterguide.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,gears5.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,gearspop.com,Ⓜ️ Microsoft
@@ -3068,6 +3467,8 @@ rules:
   - DOMAIN-SUFFIX,ie9.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,imaginecup.pl,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,img-prod-cms-rt-microsoft-com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,img-prod-cms-rt-microsoft-com.akamaized.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,img-s-msn-com.akamaized.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,ingads.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,internetexplorer.co,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,internetexplorer.com,Ⓜ️ Microsoft
@@ -3143,7 +3544,6 @@ rules:
   - DOMAIN-SUFFIX,microsoftadvertising.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,microsoftadvertisingregionalawards.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,microsoftaffiliates.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,microsoftapps.azurewebsites.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,microsoftazuread-sso.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,microsoftcloud.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,microsoftcloudworkshop.com,Ⓜ️ Microsoft
@@ -3204,11 +3604,13 @@ rules:
   - DOMAIN-SUFFIX,msturing.org,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,msudalosti.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,msvevent.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,mwf-service.akamaized.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,mymicrosoft.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,nextechafrica.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,nxta.org,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,oaspapps.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,oaspapps.com.akadns.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,officecdn-microsoft-com.akamaized.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,onecollector.cloudapp.aria,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,onecollector.cloudapp.aria.akadns.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,onenote.com,Ⓜ️ Microsoft
@@ -3231,6 +3633,7 @@ rules:
   - DOMAIN-SUFFIX,powerautomate.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,powerbi.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,powershellgallery.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,prod-video-cms-rt-microsoft-com.akamaized.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,projectmurphy.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,projectsangam.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,pxt.io,Ⓜ️ Microsoft
@@ -3244,7 +3647,12 @@ rules:
   - DOMAIN-SUFFIX,sharepoint.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,sharepointonline.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,skype,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,spoprod-a.akamaihd.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,staffhub.ms,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,statics-marketingsites-eas-ms-com.akamaized.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,statics-marketingsites-eus-ms-com.akamaized.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,statics-marketingsites-neu-ms-com.akamaized.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,statics-marketingsites-wcus-ms-com.akamaized.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,successwithteams.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,surface.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,svc.ms,Ⓜ️ Microsoft
@@ -3261,15 +3669,15 @@ rules:
   - DOMAIN-SUFFIX,uservoice.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,videobreakdown.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,videoindexer.ai,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,vip5.afdorigin-prod-am02.afdogw.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,virtualearth.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,vsallin.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,wbd.ms,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,what-fan.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,windows.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,windows.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,windows-int.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,windows-ppe.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,windows.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,windows.com.akadns.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,windows.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,windows.nl,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,windows8.hk,Ⓜ️ Microsoft
@@ -3283,50 +3691,136 @@ rules:
   - DOMAIN-SUFFIX,winhec.net,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,yammer.com,Ⓜ️ Microsoft
   - DOMAIN-SUFFIX,yammerusercontent.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,g.akamaiedge.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,a1158.g.akamai.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,a122.dscg3.akamai.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,a767.dscg3.akamai.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,cs11.wpc.v0cdn.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,cs9.wac.phicdn.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,b.akamaiedge.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,spoprod-a.akamaihd.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,windows.com.akadns.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,prod-video-cms-rt-microsoft-com.akamaized.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,statics-marketingsites-eas-ms-com.akamaized.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,statics-marketingsites-neu-ms-com.akamaized.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,vip5.afdorigin-prod-am02.afdogw.com,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,img-prod-cms-rt-microsoft-com.akamaized.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,img-s-msn-com.akamaized.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,mwf-service.akamaized.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,officecdn-microsoft-com.akamaized.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,statics-marketingsites-eus-ms-com.akamaized.net,Ⓜ️ Microsoft
-  - DOMAIN-SUFFIX,statics-marketingsites-wcus-ms-com.akamaized.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,callersbane.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,minecraft.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,minecraftshop.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,mojang.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoft-online.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoft-online.com.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftnews.cc,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftnews.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftnews.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftnews.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftnews.org,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftnewsforkids.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftnewsforkids.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftnewsforkids.org,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftnewskids.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftnewskids.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftnewskids.org,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftol.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftol.com.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,microsoftusercontent.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msn.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msn.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msn.com.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msn.com.nsatc.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msn.com.tw,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msnewskids.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msnewskids.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msnewskids.org,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msnkids.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,winmp.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,o365cn.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,o365files.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,o365weve-dev.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,o365weve-ppe.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,o365weve.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,office,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,office.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,office.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,office365.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,officedev.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,1drv.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,1drv.ms,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,livefilestore.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,onedrive.co,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,onedrive.co.uk,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,onedrive.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,onedrive.eu,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,onedrive.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,onedrive.org,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,groupme.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,skype.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,skype.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,skypeassets.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,skypeassets.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,skypeforbusiness.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,sway-cdn.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,sway-extensions.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,sway.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,visualstudio-staging.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,visualstudio.co,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,visualstudio.co.uk,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,visualstudio.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,visualstudio.eu,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,visualstudio.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,vsassets.io,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,vscode-cdn.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,vscode-unpkg.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,vscode-webview.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,vscode.dev,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,live.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,live.com.akadns.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,sclive.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,windowslive.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,wlxrs.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,forzamotorsport.net,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,forzaracingchampionship.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,forzarc.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,gamepass.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,msgamestudios.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,orithegame.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,renovacionxboxlive.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,tellmewhygame.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xbox.co,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xbox.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xbox.eu,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xbox.org,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xbox360.co,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xbox360.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xbox360.eu,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xbox360.org,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xboxab.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xboxgamepass.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xboxgamestudios.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xboxlive.cn,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xboxlive.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xboxone.co,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xboxone.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xboxone.eu,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xboxplayanywhere.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xboxservices.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xboxstudios.com,Ⓜ️ Microsoft
+  - DOMAIN-SUFFIX,xbx.lv,Ⓜ️ Microsoft
 
   # Apple
-  - DOMAIN-KEYWORD,apple.com.akadns.net,🍎 Apple
-  - DOMAIN-KEYWORD,icloud.com.akadns.net,🍎 Apple
   - DOMAIN-SUFFIX,aaplimg.com,🍎 Apple
+  - DOMAIN-SUFFIX,apple-cloudkit.com,🍎 Apple
+  - DOMAIN-SUFFIX,apple-dns.net,🍎 Apple
+  - DOMAIN-SUFFIX,apple-livephotoskit.com,🍎 Apple
+  - DOMAIN-SUFFIX,apple-mapkit.com,🍎 Apple
+  - DOMAIN-SUFFIX,apple-support.akadns.net,🍎 Apple
   - DOMAIN-SUFFIX,apple.co,🍎 Apple
   - DOMAIN-SUFFIX,apple.com,🍎 Apple
-  - DOMAIN-SUFFIX,apple-cloudkit.com,🍎 Apple
-  - DOMAIN-SUFFIX,apple-mapkit.com,🍎 Apple
+  - DOMAIN-SUFFIX,apple.com.akadns.net,🍎 Apple
   - DOMAIN-SUFFIX,appsto.re,🍎 Apple
   - DOMAIN-SUFFIX,cdn-apple.com,🍎 Apple
-  - DOMAIN-SUFFIX,icloud.com,🍎 Apple
   - DOMAIN-SUFFIX,icloud-content.com,🍎 Apple
+  - DOMAIN-SUFFIX,icloud.com,🍎 Apple
+  - DOMAIN-SUFFIX,icloud.com.akadns.net,🍎 Apple
   - DOMAIN-SUFFIX,itunes.com,🍎 Apple
+  - DOMAIN-SUFFIX,ls-apple.com.akadns.net,🍎 Apple
   - DOMAIN-SUFFIX,me.com,🍎 Apple
+  - DOMAIN-SUFFIX,me.com.akadns.net,🍎 Apple
   - DOMAIN-SUFFIX,mzstatic.com,🍎 Apple
-  - DOMAIN-SUFFIX,apple.comscoreresearch.com,🍎 Apple
-  - DOMAIN-SUFFIX,apple.news,🍎 Apple
 
-  - DOMAIN-SUFFIX,applemusic.com,🍎 Apple
-  - DOMAIN-SUFFIX,music.apple.com,🍎 Apple
-  - DOMAIN,aod.itunes.apple.com,🍎 Apple
   - DOMAIN,aod-ssl.itunes.apple.com,🍎 Apple
-  - DOMAIN,audio.itunes.apple.com,🍎 Apple
+  - DOMAIN,aod.itunes.apple.com,🍎 Apple
+  - DOMAIN-SUFFIX,applemusic.com,🍎 Apple
   - DOMAIN,audio-ssl.itunes.apple.com,🍎 Apple
+  - DOMAIN,audio.itunes.apple.com,🍎 Apple
+  - DOMAIN-SUFFIX,music.apple.com,🍎 Apple
   - DOMAIN,mvod.itunes.apple.com,🍎 Apple
   - DOMAIN,streamingaudio.itunes.apple.com,🍎 Apple
   - DOMAIN-SUFFIX,blobstore.apple.com,🍎 Apple
@@ -3336,6 +3830,8 @@ rules:
   - DOMAIN-SUFFIX,gvt1.com,🎬 YouTube
   - DOMAIN-SUFFIX,video.google.com,🎬 YouTube
   - DOMAIN-SUFFIX,youtu.be,🎬 YouTube
+  - DOMAIN-SUFFIX,youtube-nocookie.com,🎬 YouTube
+  - DOMAIN-SUFFIX,youtube-ui.l.google.com,🎬 YouTube
   - DOMAIN-SUFFIX,youtube.ae,🎬 YouTube
   - DOMAIN-SUFFIX,youtube.al,🎬 YouTube
   - DOMAIN-SUFFIX,youtube.am,🎬 YouTube
@@ -3492,14 +3988,16 @@ rules:
   - DOMAIN-SUFFIX,youtubeembeddedplayer.googleapis.com,🎬 YouTube
   - DOMAIN-SUFFIX,youtubei.googleapis.com,🎬 YouTube
   - DOMAIN-SUFFIX,youtubekids.com,🎬 YouTube
-  - DOMAIN-SUFFIX,youtube-nocookie.com,🎬 YouTube
-  - DOMAIN-SUFFIX,youtube-ui.l.google.com,🎬 YouTube
   - DOMAIN-SUFFIX,yt.be,🎬 YouTube
   - DOMAIN-SUFFIX,yt3.ggpht.com,🎬 YouTube
   - DOMAIN-SUFFIX,ytimg.com,🎬 YouTube
 
 
   # Disney
+  - DOMAIN,authorization.go.com,🎬 Disney
+  - DOMAIN,disney.content.edge.bamgrid.com,🎬 Disney
+  - DOMAIN,disney.playback.edge.bamgrid.com,🎬 Disney
+  - DOMAIN,login.disney.com,🎬 Disney
   - DOMAIN-SUFFIX,cdn.registerdisney.go.com,🎬 Disney
   - DOMAIN-SUFFIX,disney-plus.net,🎬 Disney
   - DOMAIN-SUFFIX,disney.api.edge.bamgrid.com,🎬 Disney
@@ -3508,6 +4006,7 @@ rules:
   - DOMAIN-SUFFIX,disneyplus.com,🎬 Disney
   - DOMAIN-SUFFIX,disneystreaming.com,🎬 Disney
   - DOMAIN-SUFFIX,dssott.com,🎬 Disney
+
   # Netflix
   - DOMAIN-SUFFIX,netflix.com,🎬 Netflix
   - DOMAIN-SUFFIX,netflix.net,🎬 Netflix
@@ -3516,33 +4015,34 @@ rules:
   - DOMAIN-SUFFIX,nflximg.net,🎬 Netflix
   - DOMAIN-SUFFIX,nflxso.net,🎬 Netflix
   - DOMAIN-SUFFIX,nflxvideo.net,🎬 Netflix
+
   # Bilibili
   - DOMAIN-SUFFIX,acg.tv,🎬 BiliBili
   - DOMAIN-SUFFIX,acgvideo.com,🎬 BiliBili
   - DOMAIN-SUFFIX,b23.tv,🎬 BiliBili
+  - DOMAIN-SUFFIX,biliapi.com,🎬 BiliBili
+  - DOMAIN-SUFFIX,biliapi.net,🎬 BiliBili
   - DOMAIN-SUFFIX,bilibili.com,🎬 BiliBili
   - DOMAIN-SUFFIX,bilibili.tv,🎬 BiliBili
-  - DOMAIN-SUFFIX,biliapi.net,🎬 BiliBili
-  - DOMAIN-SUFFIX,biliapi.com,🎬 BiliBili
   - DOMAIN-SUFFIX,bilivideo.com,🎬 BiliBili
   - DOMAIN-SUFFIX,hdslb.com,🎬 BiliBili
   - DOMAIN,upos-hz-mirrorakam.akamaized.net,🎬 BiliBili
-  - DOMAIN,apiintl.biliapi.net,🎬 BiliBili
 
   # TW
-  - DOMAIN-SUFFIX,bahamut.com.tw,🔰 境外流量
-  - DOMAIN-SUFFIX,gamer.com.tw,🔰 境外流量
-  - DOMAIN,gamer-cds.cdn.hinet.net,🔰 境外流量
-  - DOMAIN,gamer2-cds.cdn.hinet.net,🔰 境外流量
   - DOMAIN,bahamut.akamaized.net,🔰 境外流量
+  - DOMAIN-SUFFIX,bahamut.com.tw,🔰 境外流量
+  - DOMAIN,gamer-cds.cdn.hinet.net,🔰 境外流量
+  - DOMAIN-SUFFIX,gamer.com.tw,🔰 境外流量
+  - DOMAIN,gamer2-cds.cdn.hinet.net,🔰 境外流量
+
   
+  - DOMAIN-SUFFIX,kfs.io,🔰 境外流量
   - DOMAIN-SUFFIX,kkbox.com,🔰 境外流量
   - DOMAIN-SUFFIX,kkbox.com.tw,🔰 境外流量
-  - DOMAIN-SUFFIX,kfs.io,🔰 境外流量
 
-  - DOMAIN-SUFFIX,kktv.me,🔰 境外流量
-  - DOMAIN-SUFFIX,kktv.com.tw,🔰 境外流量
   - DOMAIN,kktv-theater.kk.stream,🔰 境外流量
+  - DOMAIN-SUFFIX,kktv.com.tw,🔰 境外流量
+  - DOMAIN-SUFFIX,kktv.me,🔰 境外流量
 
   - DOMAIN-SUFFIX,d3c7rimkq79yfu.cloudfront.net,🔰 境外流量
   - DOMAIN-SUFFIX,linetv.tw,🔰 境外流量

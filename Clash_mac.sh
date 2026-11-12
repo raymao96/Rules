@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
+set -e
 export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
+cd "$(dirname "$0")"
 
 date=$(date +"%Y-%m-%d %H:%M")
-file="Clash.yaml"
+file="downloads/Clash.yaml"
 
-# 先刪除舊檔案以免寫入重複內容
-rm -rf Clash.yaml
+# 清除前次執行留下的暫存檔案
+rm -rf downloads/
 
 # 切換目錄
 mkdir -p downloads && cd downloads
@@ -77,7 +79,7 @@ sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' CCB.yaml > CCB1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' CGB.yaml > CGB1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' CEB.yaml > CEB1.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' BOCOM.yaml > BOCOM.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' BOCOM.yaml > BOCOM1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' ChinaTelecom.yaml > ChinaTelecom1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' ChinaUnicom.yaml > ChinaUnicom1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' ChinaMobile.yaml > ChinaMobile1.yaml
@@ -134,99 +136,120 @@ sed -e "/#/{x;p;x;}" Clash_Final.yaml > Final.yaml
 
 # 加上日期
 cd ..
-echo "# 更新日期： $date" > $file
+echo "# 更新日期： $date" > "$file"
 
 # 合併為單一檔案
-cat head.yml >> Clash.yaml
-cat downloads/TW.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Domestic1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/LAN1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/WeChat1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Baidu1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/BaiDuTieBa1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/1151.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/ChengTongWangPan1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/iQIYI1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Youku1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/NetEaseMusic1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Douyu1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/CCTV1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/BOC1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/CMB1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/CCB1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/CGB1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/CEB1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/BOCOM.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/ChinaTelecom1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/ChinaUnicom1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/ChinaMobile1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/GameDownloadCN1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/AI_Suite.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Proxy1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Speedtest1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/DMM1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Game1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Reddit1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/MOMOShop1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/PChome.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Shopee1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Microsoft1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Apple1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Apple_Music.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/YouTube1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/YouTube_Music.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Disney.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Netflix1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Bilibili1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Bahamut1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/KKBOX1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/KKTV1.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/LineTV.yaml >> Clash.yaml
-echo >> Clash.yaml
-cat downloads/Final.yaml >> Clash.yaml
+cat head.yml >> "$file"
+echo >> "$file"
+cat downloads/TW.yaml >> "$file"
+echo >> "$file"
+cat downloads/Domestic1.yaml >> "$file"
+echo >> "$file"
+cat downloads/LAN1.yaml >> "$file"
+echo >> "$file"
+cat downloads/WeChat1.yaml >> "$file"
+echo >> "$file"
+cat downloads/Baidu1.yaml >> "$file"
+echo >> "$file"
+cat downloads/BaiDuTieBa1.yaml >> "$file"
+echo >> "$file"
+cat downloads/1151.yaml >> "$file"
+echo >> "$file"
+cat downloads/ChengTongWangPan1.yaml >> "$file"
+echo >> "$file"
+cat downloads/iQIYI1.yaml >> "$file"
+echo >> "$file"
+cat downloads/Youku1.yaml >> "$file"
+echo >> "$file"
+cat downloads/NetEaseMusic1.yaml >> "$file"
+echo >> "$file"
+cat downloads/Douyu1.yaml >> "$file"
+echo >> "$file"
+cat downloads/CCTV1.yaml >> "$file"
+echo >> "$file"
+cat downloads/BOC1.yaml >> "$file"
+echo >> "$file"
+cat downloads/CMB1.yaml >> "$file"
+echo >> "$file"
+cat downloads/CCB1.yaml >> "$file"
+echo >> "$file"
+cat downloads/CGB1.yaml >> "$file"
+echo >> "$file"
+cat downloads/CEB1.yaml >> "$file"
+echo >> "$file"
+cat downloads/BOCOM1.yaml >> "$file"
+echo >> "$file"
+cat downloads/ChinaTelecom1.yaml >> "$file"
+echo >> "$file"
+cat downloads/ChinaUnicom1.yaml >> "$file"
+echo >> "$file"
+cat downloads/ChinaMobile1.yaml >> "$file"
+echo >> "$file"
+cat downloads/GameDownloadCN1.yaml >> "$file"
+echo >> "$file"
+cat downloads/AI_Suite.yaml >> "$file"
+echo >> "$file"
+cat downloads/Proxy1.yaml >> "$file"
+echo >> "$file"
+cat downloads/Speedtest1.yaml >> "$file"
+echo >> "$file"
+cat downloads/DMM1.yaml >> "$file"
+echo >> "$file"
+cat downloads/Game1.yaml >> "$file"
+echo >> "$file"
+cat downloads/Reddit1.yaml >> "$file"
+echo >> "$file"
+cat downloads/MOMOShop1.yaml >> "$file"
+echo >> "$file"
+cat downloads/PChome.yaml >> "$file"
+echo >> "$file"
+cat downloads/Shopee1.yaml >> "$file"
+echo >> "$file"
+cat downloads/Microsoft1.yaml >> "$file"
+echo >> "$file"
+cat downloads/Apple1.yaml >> "$file"
+echo >> "$file"
+cat downloads/Apple_Music.yaml >> "$file"
+echo >> "$file"
+cat downloads/YouTube1.yaml >> "$file"
+echo >> "$file"
+cat downloads/YouTube_Music.yaml >> "$file"
+echo >> "$file"
+cat downloads/Disney.yaml >> "$file"
+echo >> "$file"
+cat downloads/Netflix1.yaml >> "$file"
+echo >> "$file"
+cat downloads/Bilibili1.yaml >> "$file"
+echo >> "$file"
+cat downloads/Bahamut1.yaml >> "$file"
+echo >> "$file"
+cat downloads/KKBOX1.yaml >> "$file"
+echo >> "$file"
+cat downloads/KKTV1.yaml >> "$file"
+echo >> "$file"
+cat downloads/LineTV.yaml >> "$file"
+echo >> "$file"
+cat downloads/Final.yaml >> "$file"
+
+# 檢查規則是否因缺少換行而合併到同一行
+if ! awk '
+  /^rules:[[:space:]]*(#.*)?$/ { in_rules = 1; next }
+  in_rules && /^[^[:space:]#]/ { in_rules = 0 }
+  in_rules && /^[[:space:]]*-[[:space:]]*[A-Z][A-Z0-9-]*,/ {
+    rule = $0
+    sub(/^[[:space:]]*-[[:space:]]*[A-Z][A-Z0-9-]*,/, "", rule)
+    if (rule ~ /-[[:space:]]*[A-Z][A-Z0-9-]*,/) {
+      printf "規則可能連在同一行（第 %d 行）：%s\n", NR, $0 > "/dev/stderr"
+      invalid = 1
+    }
+  }
+  END { exit invalid }
+' "$file"; then
+  echo "規則檢查失敗，保留原有 Clash.yaml。" >&2
+  exit 1
+fi
+
+mv "$file" Clash.yaml
 
 # 清理多餘檔案
 rm -rf downloads/
