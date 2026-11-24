@@ -22,13 +22,34 @@
   - DOMAIN-SUFFIX,xn--ngstr-lra8j.com,DIRECT
   - DOMAIN-SUFFIX,clientservices.googleapis.com,🎬 YouTube
   - DOMAIN-SUFFIX,ggpht.com,🎬 YouTube
+  - DOMAIN-SUFFIX,gstatic.com,🎬 YouTube
+  - DOMAIN-SUFFIX,deepmind.com,🎬 YouTube
+  - DOMAIN-SUFFIX,opal.goog,🎬 YouTube
   - DOMAIN-KEYWORD,google,🎬 YouTube
   
-  # AI Agent
+  # AI
   - DOMAIN-SUFFIX,openrouter.ai,🤖 AI
   - DOMAIN-SUFFIX,opencode.ai,🤖 AI
   - DOMAIN-SUFFIX,pi.dev,🤖 AI
   - DOMAIN-SUFFIX,pi-web.dev,🤖 AI
+  - DOMAIN-SUFFIX,claudemcpclient.com,🤖 AI
+  - DOMAIN-SUFFIX,claudemcpcontent.com,🤖 AI
+  - DOMAIN,anthropic.com.cdn.cloudflare.net,🤖 AI
+  - DOMAIN,servd-anthropic-website.b-cdn.net,🤖 AI
+  - DOMAIN,anthropic.auth0.com,🤖 AI
+  - DOMAIN,anthropic-com.ghost.io,🤖 AI
+  - DOMAIN-SUFFIX,withpersona.com,🤖 AI
+  - DOMAIN-SUFFIX,frompersona.com,🤖 AI
+  - DOMAIN-SUFFIX,statsigapi.net,🤖 AI
+  - DOMAIN-KEYWORD,datadog,🤖 AI
+  - DOMAIN-KEYWORD,sentry,🤖 AI
+  - DOMAIN-KEYWORD,sift,🤖 AI
+  - DOMAIN,cdn.usefathom.com,🤖 AI
+  - IP-CIDR,160.79.104.0/21,🤖 AI
+  - IP-CIDR6,2607:6bc0::/32,🤖 AI
+  - IP-ASN,399358,🤖 AI,no-resolve
+  - GEOSITE,anthropic,🤖 AI
+  - GEOSITE,category-ntp,🤖 AI
 
   # Wechat.com
 

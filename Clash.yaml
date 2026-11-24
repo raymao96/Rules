@@ -1,4 +1,4 @@
-# 更新日期： 2026-11-12 17:45
+# 更新日期： 2026-11-24 18:28
 port: 1087
 socks-port: 1080
 redir-port: 7892
@@ -67,12 +67,12 @@ proxy-groups:
   - { name: "🔰 境外流量", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量"] }
   - { name: "🇨🇳 境内流量", type: select, proxies: ["DIRECT",/^(?=.*aaa)(?=.*bbb).*$/] }
   - { name: "♻️ Auto", type: fallback, proxies: [/^(.*)(TW|HK|MO|JP|KR|SG|US)+(.*)$/], url: "http://www.gstatic.com/generate_204", interval: 180 }
-  - { name: "🤖 AI", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|JP|KR|SG|US|DE)+(.*)$/] }
+  - { name: "🤖 AI", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|JP|KR|SG|US|DE)+(.*)$/] }
   - { name: "🍎 Apple", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
   - { name: "Ⓜ️ Microsoft", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|JP|KR|SG|US)+(.*)$/] }
-  - { name: "🎬 YouTube", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|MO|JP|KR|SG|US)+(.*)$/] }
-  - { name: "🎬 Netflix", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|JP|US)+(.*)$/] }
-  - { name: "🎬 Disney", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|JP|US)+(.*)$/] }
+  - { name: "🎬 YouTube", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|MO|JP|KR|SG|US|DE)+(.*)$/] }
+  - { name: "🎬 Netflix", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|JP|US|DE)+(.*)$/] }
+  - { name: "🎬 Disney", type: select, proxies: ["♻️ Auto", "🇨🇳 境内流量",/^(.*)(TW|HK|JP|US|DE)+(.*)$/] }
   - { name: "🎬 BiliBili", type: select, proxies: ["🇨🇳 境内流量", "♻️ Auto",/^(.*)(TW|HK|MO)+(.*)$/] }
 
 rules:
@@ -105,14 +105,35 @@ rules:
   - DOMAIN-SUFFIX,xn--ngstr-lra8j.com,DIRECT
   - DOMAIN-SUFFIX,clientservices.googleapis.com,🎬 YouTube
   - DOMAIN-SUFFIX,ggpht.com,🎬 YouTube
+  - DOMAIN-SUFFIX,gstatic.com,🎬 YouTube
+  - DOMAIN-SUFFIX,deepmind.com,🎬 YouTube
+  - DOMAIN-SUFFIX,opal.goog,🎬 YouTube
   - DOMAIN-KEYWORD,google,🎬 YouTube
   
 
-  # AI Agent
+  # AI
   - DOMAIN-SUFFIX,openrouter.ai,🤖 AI
   - DOMAIN-SUFFIX,opencode.ai,🤖 AI
   - DOMAIN-SUFFIX,pi.dev,🤖 AI
   - DOMAIN-SUFFIX,pi-web.dev,🤖 AI
+  - DOMAIN-SUFFIX,claudemcpclient.com,🤖 AI
+  - DOMAIN-SUFFIX,claudemcpcontent.com,🤖 AI
+  - DOMAIN,anthropic.com.cdn.cloudflare.net,🤖 AI
+  - DOMAIN,servd-anthropic-website.b-cdn.net,🤖 AI
+  - DOMAIN,anthropic.auth0.com,🤖 AI
+  - DOMAIN,anthropic-com.ghost.io,🤖 AI
+  - DOMAIN-SUFFIX,withpersona.com,🤖 AI
+  - DOMAIN-SUFFIX,frompersona.com,🤖 AI
+  - DOMAIN-SUFFIX,statsigapi.net,🤖 AI
+  - DOMAIN-KEYWORD,datadog,🤖 AI
+  - DOMAIN-KEYWORD,sentry,🤖 AI
+  - DOMAIN-KEYWORD,sift,🤖 AI
+  - DOMAIN,cdn.usefathom.com,🤖 AI
+  - IP-CIDR,160.79.104.0/21,🤖 AI
+  - IP-CIDR6,2607:6bc0::/32,🤖 AI
+  - IP-ASN,399358,🤖 AI,no-resolve
+  - GEOSITE,anthropic,🤖 AI
+  - GEOSITE,category-ntp,🤖 AI
 
 
   # Wechat.com
@@ -1462,77 +1483,6 @@ rules:
   - DOMAIN-SUFFIX,githubcopilot.com,🤖 AI
   - DOMAIN,origin-tracker.githubusercontent.com,🤖 AI
   - DOMAIN,api.github.com,🤖 AI
-  - DOMAIN,ai.google.dev,🤖 AI
-  - DOMAIN-SUFFIX,aistudio.google.com,🤖 AI
-  - DOMAIN,alkalicore-pa.clients6.google.com,🤖 AI
-  - DOMAIN,alkalimakersuite-pa.clients6.google.com,🤖 AI
-  - DOMAIN-SUFFIX,generativeai.google,🤖 AI
-  - DOMAIN-SUFFIX,makersuite.google.com,🤖 AI
-  - DOMAIN,waa-pa.clients6.google.com,🤖 AI
-  - DOMAIN-SUFFIX,antigravity.google,🤖 AI
-  - DOMAIN-SUFFIX,antigravity.google.com,🤖 AI
-  - DOMAIN,cloudcode-pa.googleapis.com,🤖 AI
-  - DOMAIN,daily-cloudcode-pa.googleapis.com,🤖 AI
-  - DOMAIN,daily-cloudcode-pa.sandbox.googleapis.com,🤖 AI
-  - DOMAIN,aiplatform.eu.rep.googleapis.com,🤖 AI
-  - DOMAIN,aiplatform.googleapis.com,🤖 AI
-  - DOMAIN,aiplatform.mtls.googleapis.com,🤖 AI
-  - DOMAIN,aiplatform.us.rep.googleapis.com,🤖 AI
-  - DOMAIN,businessaicode.eu.rep.googleapis.com,🤖 AI
-  - DOMAIN,businessaicode.googleapis.com,🤖 AI
-  - DOMAIN,businessaicode.mtls.googleapis.com,🤖 AI
-  - DOMAIN,businessaicode.us.rep.googleapis.com,🤖 AI
-  - DOMAIN,discoveryengine.googleapis.com,🤖 AI
-  - DOMAIN,discoveryengine.mtls.googleapis.com,🤖 AI
-  - DOMAIN,eu-discoveryengine.googleapis.com,🤖 AI
-  - DOMAIN,eu-discoveryengine.mtls.googleapis.com,🤖 AI
-  - DOMAIN,us-discoveryengine.googleapis.com,🤖 AI
-  - DOMAIN,us-discoveryengine.mtls.googleapis.com,🤖 AI
-  - DOMAIN,aida.googleapis.com,🤖 AI
-  - DOMAIN-SUFFIX,deepmind.com,🤖 AI
-  - DOMAIN-SUFFIX,deepmind.google,🤖 AI
-  - DOMAIN-SUFFIX,aisandbox-pa.googleapis.com,🤖 AI
-  - DOMAIN-SUFFIX,bard.google.com,🤖 AI
-  - DOMAIN-SUFFIX,gemini.google,🤖 AI
-  - DOMAIN-SUFFIX,gemini.google.com,🤖 AI
-  - DOMAIN-SUFFIX,robinfrontend-pa.googleapis.com,🤖 AI
-  - DOMAIN-SUFFIX,notebook.google,🤖 AI
-  - DOMAIN-SUFFIX,notebook.google.com,🤖 AI
-  - DOMAIN-SUFFIX,notebooklm.cloud.google.com,🤖 AI
-  - DOMAIN-SUFFIX,notebooklm.google,🤖 AI
-  - DOMAIN-SUFFIX,notebooklm.google.com,🤖 AI
-  - DOMAIN,apis.google.com,🤖 AI
-  - DOMAIN,content-autofill.googleapis.com,🤖 AI
-  - DOMAIN,csp.withgoogle.com,🤖 AI
-  - DOMAIN,encrypted-tbn0.gstatic.com,🤖 AI
-  - DOMAIN,encrypted-tbn1.gstatic.com,🤖 AI
-  - DOMAIN,encrypted-tbn2.gstatic.com,🤖 AI
-  - DOMAIN,encrypted-tbn3.gstatic.com,🤖 AI
-  - DOMAIN,fonts.googleapis.com,🤖 AI
-  - DOMAIN,fonts.gstatic.com,🤖 AI
-  - DOMAIN,jnn-pa.googleapis.com,🤖 AI
-  - DOMAIN,lh3.google.com,🤖 AI
-  - DOMAIN,lh3.googleusercontent.com,🤖 AI
-  - DOMAIN,lh5.googleusercontent.com,🤖 AI
-  - DOMAIN,maps.googleapis.com,🤖 AI
-  - DOMAIN,maps.gstatic.com,🤖 AI
-  - DOMAIN,ogs.google.com,🤖 AI
-  - DOMAIN,optimizationguide-pa.googleapis.com,🤖 AI
-  - DOMAIN,play.google.com,🤖 AI
-  - DOMAIN,ssl.gstatic.com,🤖 AI
-  - DOMAIN,streetviewpixels-pa.googleapis.com,🤖 AI
-  - DOMAIN-SUFFIX,geller-pa.googleapis.com,🤖 AI
-  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,🤖 AI
-  - DOMAIN-SUFFIX,proactivebackend-pa.googleapis.com,🤖 AI
-  - DOMAIN-SUFFIX,jules.google,🤖 AI
-  - DOMAIN-SUFFIX,jules.google.com,🤖 AI
-  - DOMAIN,jules.googleapis.com,🤖 AI
-  - DOMAIN,labs.google,🤖 AI
-  - DOMAIN,appcatalyst.pa.googleapis.com,🤖 AI
-  - DOMAIN-SUFFIX,opal.goog,🤖 AI
-  - DOMAIN-SUFFIX,opal.google,🤖 AI
-  - DOMAIN-SUFFIX,opal.google.com,🤖 AI
-  - DOMAIN-SUFFIX,opal.withgoogle.com,🤖 AI
   - DOMAIN-SUFFIX,groq.com,🤖 AI
   - DOMAIN-SUFFIX,clipdrop.co,🤖 AI
   - DOMAIN-SUFFIX,jasper.ai,🤖 AI

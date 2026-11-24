@@ -57,8 +57,6 @@ wget https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Media/B
 wget https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Media/KKBOX.yaml
 wget https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Media/KKTV.yaml
 wget https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Media/Line%20TV.yaml
-wget https://raw.githubusercontent.com/raymao96/Rules/main/Clash_TW.yaml
-wget https://raw.githubusercontent.com/raymao96/Rules/main/Clash_Final.yaml
 
 # 去除註釋及空白行並加上分流名稱
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,DIRECT/g' Domestic.yaml > Domestic1.yaml
@@ -96,7 +94,7 @@ sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' KKBOX.yaml > KKBOX1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' KKTV.yaml > KKTV1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🔰 境外流量/g' Line\ TV.yaml > LineTV.yaml
-sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🤖 AI/g' AI\ Suite.yaml > AI_Suite.yaml
+sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e '/google/d' -e '/deepmind/d' -e '/gstatic/d' -e '/opal\.goog/d' -e 's/$/,🤖 AI/g' AI\ Suite.yaml > AI_Suite.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,Ⓜ️ Microsoft/g' Microsoft.yaml > Microsoft1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🍎 Apple/g' Apple.yaml > Apple1.yaml
 sed -e '/payload/d' -e '/no-resolve/d' -e '/PROCESS-NAME/d' -e '/^[ ]*$/d' -e '/#/d' -e '/IP-ASN/d' -e 's/$/,🍎 Apple/g' Apple\ Music.yaml > Apple_Music.yaml
@@ -130,9 +128,9 @@ sed -i '' -e '1i \
 sed -i '' -e '1i \
   ' KKBOX1.yaml
 
-# 重新加上空行
-sed -e "/#/{x;p;x;}" Clash_TW.yaml > TW.yaml
-sed -e "/#/{x;p;x;}" Clash_Final.yaml > Final.yaml
+# 重新加上空行（讀取本機自訂規則）
+sed -e "/#/{x;p;x;}" ../Clash_TW.yaml > TW.yaml
+sed -e "/#/{x;p;x;}" ../Clash_Final.yaml > Final.yaml
 
 # 加上日期
 cd ..
@@ -231,25 +229,132 @@ cat downloads/LineTV.yaml >> "$file"
 echo >> "$file"
 cat downloads/Final.yaml >> "$file"
 
-# 檢查規則是否因缺少換行而合併到同一行
+# 檢查 YAML 結構、規則格式、黏行、策略組存在性與重複行
 if ! awk '
-  /^rules:[[:space:]]*(#.*)?$/ { in_rules = 1; next }
-  in_rules && /^[^[:space:]#]/ { in_rules = 0 }
-  in_rules && /^[[:space:]]*-[[:space:]]*[A-Z][A-Z0-9-]*,/ {
-    rule = $0
-    sub(/^[[:space:]]*-[[:space:]]*[A-Z][A-Z0-9-]*,/, "", rule)
-    if (rule ~ /-[[:space:]]*[A-Z][A-Z0-9-]*,/) {
-      printf "規則可能連在同一行（第 %d 行）：%s\n", NR, $0 > "/dev/stderr"
+  BEGIN {
+    groups["DIRECT"] = 1
+    groups["REJECT"] = 1
+    groups["REJECT-DROP"] = 1
+    groups["PASS"] = 1
+    groups["COMPATIBLE"] = 1
+  }
+  {
+    sub(/\r$/, "")
+  }
+  /^proxy-groups:[[:space:]]*(#.*)?$/ {
+    has_pg = 1
+    in_pg = 1
+    in_rules = 0
+    next
+  }
+  /^rules:[[:space:]]*(#.*)?$/ {
+    has_rules = 1
+    in_rules = 1
+    in_pg = 0
+    next
+  }
+  /^[^[:space:]#]/ {
+    in_pg = 0
+    in_rules = 0
+  }
+  in_pg {
+    line = $0
+    if (match(line, /name:[[:space:]]*"[^"]+"/)) {
+      seg = substr(line, RSTART, RLENGTH)
+      sub(/^name:[[:space:]]*"/, "", seg)
+      sub(/"$/, "", seg)
+      groups[seg] = 1
+    }
+    next
+  }
+  in_rules {
+    if ($0 ~ /^[[:space:]]*$/ || $0 ~ /^[[:space:]]*#/) next
+
+    rule_count++
+
+    # 1. 黏行檢查
+    if ($0 ~ /^[[:space:]]*-[[:space:]]*[A-Z][A-Z0-9-]*,/) {
+      rest = $0
+      sub(/^[[:space:]]*-[[:space:]]*[A-Z][A-Z0-9-]*,/, "", rest)
+      if (rest ~ /-[[:space:]]*[A-Z][A-Z0-9-]*,/) {
+        printf "錯誤：規則可能連在同一行（第 %d 行）：%s\n", NR, $0 > "/dev/stderr"
+        invalid = 1
+        next
+      }
+    }
+
+    # 2. 縮排與基本格式檢查（必須為 2 空格 + "- TYPE,..."）
+    if ($0 !~ /^  - [A-Z][A-Z0-9-]*,/) {
+      printf "錯誤：規則格式或縮排異常（第 %d 行）：%s\n", NR, $0 > "/dev/stderr"
+      invalid = 1
+      next
+    }
+
+    body = substr($0, 5)
+    gsub(/^[[:space:]]+|[[:space:]]+$/, "", body)
+    n = split(body, parts, ",")
+    rtype = parts[1]
+
+    if (rtype == "MATCH") {
+      if (n < 2) {
+        printf "錯誤：MATCH 規則缺少策略組（第 %d 行）：%s\n", NR, $0 > "/dev/stderr"
+        invalid = 1
+        next
+      }
+      policy = parts[2]
+      key = "MATCH"
+    } else {
+      if (n < 3 || parts[2] == "") {
+        printf "錯誤：規則欄位不足（第 %d 行）：%s\n", NR, $0 > "/dev/stderr"
+        invalid = 1
+        next
+      }
+      policy = parts[3]
+      key = parts[1] "," parts[2]
+    }
+    gsub(/^[[:space:]]+|[[:space:]]+$/, "", policy)
+
+    # 3. 策略組存在性檢查
+    if (!(policy in groups)) {
+      printf "錯誤：未知策略組「%s」（第 %d 行）：%s\n", policy, NR, $0 > "/dev/stderr"
       invalid = 1
     }
+
+    # 4. 重複規則統計（僅警告，不阻斷）
+    if (body in seen_exact) {
+      dup_exact++
+    } else {
+      seen_exact[body] = NR
+    }
+    if (key in seen_key) {
+      if (seen_key_policy[key] != policy) dup_conflict++
+    } else {
+      seen_key[key] = NR
+      seen_key_policy[key] = policy
+    }
   }
-  END { exit invalid }
+  END {
+    if (!has_pg) {
+      print "錯誤：缺少 proxy-groups 區段。" > "/dev/stderr"
+      invalid = 1
+    }
+    if (!has_rules || rule_count == 0) {
+      print "錯誤：缺少 rules 區段或規則數為 0。" > "/dev/stderr"
+      invalid = 1
+    }
+    if (!invalid) {
+      printf "規則檢查通過：共 %d 條規則，格式、縮排與策略組皆正常。\n", rule_count
+      if (dup_exact > 0 || dup_conflict > 0) {
+        printf "重複規則提示：完全重複 %d 條、同條件異策略組（高優先覆寫）%d 條。\n", dup_exact, dup_conflict
+      }
+    }
+    exit invalid
+  }
 ' "$file"; then
   echo "規則檢查失敗，保留原有 Clash.yaml。" >&2
   exit 1
 fi
 
-echo "規則檢查通過，未發現規則連在同一行。"
 mv "$file" Clash.yaml
 
 # 清理多餘檔案
