@@ -1,5 +1,5 @@
-# --- 主流交易所 (Exchanges) ---
-# 幣安 (Binance)
+# --- 主流交易所---
+# Binance
 DOMAIN-KEYWORD,binance
 DOMAIN-SUFFIX,binance.com
 DOMAIN-SUFFIX,binance.me
@@ -7,44 +7,124 @@ DOMAIN-SUFFIX,binance.charity
 DOMAIN-SUFFIX,binance.cloud
 DOMAIN-SUFFIX,binance.co
 DOMAIN-SUFFIX,binance.info
+DOMAIN-SUFFIX,binance.vision
+DOMAIN-SUFFIX,binanceapi.com
 DOMAIN-SUFFIX,bnappzh.co
 DOMAIN-SUFFIX,bnbstatic.com
+DOMAIN-SUFFIX,bncstatic.com
 DOMAIN-SUFFIX,bntrace.com
 
-# OKX (歐易)
+# OKX
 DOMAIN-KEYWORD,okx
 DOMAIN-SUFFIX,okx.com
 DOMAIN-SUFFIX,okx.org
 DOMAIN-SUFFIX,okx-dns.com
 DOMAIN-SUFFIX,okx-dns1.com
+DOMAIN-SUFFIX,okex.com
 
 # Bybit
 DOMAIN-KEYWORD,bybit
 DOMAIN-SUFFIX,bybit.com
 DOMAIN-SUFFIX,bybit.io
 DOMAIN-SUFFIX,bytick.com
+DOMAIN-SUFFIX,bybit.biz
+DOMAIN-SUFFIX,bybits.com
+DOMAIN-SUFFIX,bybitglobal.com
+DOMAIN-SUFFIX,bybit-api.com
 
-# Gate.io (芝麻開門)
+# Gate.io
 DOMAIN-KEYWORD,gateio
 DOMAIN-SUFFIX,gate.io
 DOMAIN-SUFFIX,gateio.services
 DOMAIN-SUFFIX,gateio.live
+DOMAIN-SUFFIX,gate.ac
 
-# Huobi / HTX (火幣)
+# HTX
 DOMAIN-KEYWORD,huobi
 DOMAIN-SUFFIX,htx.com
 DOMAIN-SUFFIX,huobi.com
 DOMAIN-SUFFIX,huobi.br.com
 DOMAIN-SUFFIX,huobiasia.vip
 
-# --- 熱錢包與 Web3 服務 (Wallets & Web3) ---
+# MEXC
+DOMAIN-SUFFIX,mexc.com
+DOMAIN-SUFFIX,mexc.co
+DOMAIN-SUFFIX,mexc.io
+DOMAIN-SUFFIX,mexc.link
+DOMAIN-SUFFIX,mexc.live
+DOMAIN-SUFFIX,mexc.app
+DOMAIN-SUFFIX,mexc.zone
+DOMAIN-SUFFIX,mexc-api.com
+DOMAIN-SUFFIX,mexcapi.com
+DOMAIN-SUFFIX,mexccdn.com
+DOMAIN-SUFFIX,mxc.com
+DOMAIN-SUFFIX,mxc.ai
+DOMAIN-SUFFIX,mxcapi.com
+DOMAIN-SUFFIX,greentreeone.com
+DOMAIN-SUFFIX,mocortech.com
+DOMAIN-SUFFIX,mocortech.net
+DOMAIN-SUFFIX,mexc.com.cn
+
+# Bitget
+DOMAIN-SUFFIX,bitget.com
+DOMAIN-SUFFIX,bitget.fit
+DOMAIN-SUFFIX,bitget.vip
+DOMAIN-SUFFIX,bitgetapi.com
+
+# BingX
+DOMAIN-SUFFIX,bingx.com
+DOMAIN-SUFFIX,bingx.io
+
+# Kraken
+DOMAIN-SUFFIX,kraken.com
+DOMAIN-SUFFIX,kraken.io
+
+# Coinbase
+DOMAIN-SUFFIX,coinbase.com
+
+# KuCoin
+DOMAIN-SUFFIX,kucoin.com
+DOMAIN-SUFFIX,kucoin.plus
+
+# MaiCoin / MAX
+DOMAIN-SUFFIX,maicoin.com
+
+# BitoPro / BitoEX
+DOMAIN-SUFFIX,bitopro.com
+DOMAIN-SUFFIX,bitoex.com
+
+# Rybit
+DOMAIN-SUFFIX,rybit.com
+
+# XREX
+DOMAIN-SUFFIX,xrex.io
+
+# HOYA BIT
+DOMAIN-SUFFIX,hoyabit.com
+
+# --- 加密支付與卡片 ---
+# Ether.fi
+DOMAIN-SUFFIX,ether.fi
+DOMAIN-SUFFIX,etherfi.com
+
+# Plasma One
+DOMAIN-SUFFIX,plasma.org
+DOMAIN-SUFFIX,plasma.to
+DOMAIN-SUFFIX,plasmascan.to
+
+# RedotPay
+DOMAIN-SUFFIX,redotpay.com
+DOMAIN-SUFFIX,redotpay.cn
+DOMAIN-SUFFIX,redotpay.net
+
+# --- 熱錢包與 Web3 服務 ---
 # SafePal
 DOMAIN-KEYWORD,safepal
 DOMAIN-SUFFIX,safepal.com
 DOMAIN-SUFFIX,safepal.io
 DOMAIN-SUFFIX,sfp.is
 
-# MetaMask (小狐狸)
+# MetaMask
 DOMAIN-KEYWORD,metamask
 DOMAIN-SUFFIX,metamask.io
 
@@ -56,7 +136,7 @@ DOMAIN-SUFFIX,trustwallet.com
 DOMAIN-SUFFIX,walletconnect.org
 DOMAIN-SUFFIX,walletconnect.com
 
-# --- 數據行情與資訊 (Data & Analytics) ---
+# --- 數據行情與資訊 ---
 # CoinMarketCap & CoinGecko
 DOMAIN-SUFFIX,coinmarketcap.com
 DOMAIN-SUFFIX,coingecko.com
